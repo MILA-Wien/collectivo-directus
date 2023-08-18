@@ -1,45 +1,38 @@
-# Directus Svelte Example
+# create-svelte
 
-This is a [Svelte 3](https://svelte.dev) project bootstrapped with [`create-vite`](https://github.com/vitejs/vite/tree/main/packages/create-vite)'s Svelte template preset.
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
-[![Open in CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/directus/examples/tree/main/sveltekit)
+## Creating a project
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/directus/examples/tree/main/sveltekit)
+If you're seeing this, you've probably already done this step. Congrats!
 
-Note: This example folder is a standalone frontend, which is why it will still need Directus running to work, the CodeSandbox and StackBlitz links only pull the example folder as is, you will still need Directus running somewhere to make it work, such as a [Cloud](https://directus.cloud/) instance, or self hosted.
-## 📌 Prerequisites
+```bash
+# create a new project in the current directory
+npm create svelte@latest
 
-You will need to have the provided [Directus project](../directus) running first before proceeding with this example.
+# create a new project in my-app
+npm create svelte@latest my-app
+```
 
-## 🚀 Getting Started
+## Developing
 
-1. Clone this repo.
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-2. Install dependencies for this example.
+```bash
+npm run dev
 
-   ```shell
-   cd svelte
-   npm install
-   ```
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
 
-3. Create a `.env` file by copying the provided `.env.example` file.
+## Building
 
-4. Start the development server.
+To create a production version of your app:
 
-   ```shell
-   npm run dev
-   ```
+```bash
+npm run build
+```
 
-   Your Directus Svelte example is now running at <http://localhost:3000>.
+You can preview the production build with `npm run preview`.
 
-## 🔗 Links
-
-### Directus
-
-- [Official Site](https://directus.io)
-- [Documentation](https://docs.directus.io)
-
-### Svelte
-
-- [Official Site](https://svelte.dev)
-- [Documentation](https://svelte.dev/docs)
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
