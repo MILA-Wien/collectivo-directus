@@ -2,7 +2,7 @@ version: "3"
 
 services:
   directus:
-    image: directus/directus:9.22.1
+    image: directus/directus:10.5.3
     ports:
       - 8055:8055
     volumes:
@@ -20,3 +20,4 @@ services:
       ADMIN_PASSWORD: "d1r3ctu5"
 
       CORS_ENABLED: "true"
+      EXTENSIONS_AUTO_RELOAD: "true"
