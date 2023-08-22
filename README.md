@@ -1,1 +1,0 @@
-# collectivo-directus

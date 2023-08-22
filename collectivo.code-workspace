@@ -4,11 +4,22 @@
       "path": "directus"
     },
     {
-      "path": "collectivo"
+      "path": "."
     },
     {
-      "path": "."
+      "path": "nuxt"
+    },
+    {
+      "path": "my-module"
+    },
+    {
+      "path": "nuxt-mono"
+    },
+    {
+      "path": "mono2"
     }
   ],
-  "settings": {}
+  "settings": {
+    "nuxt.isNuxtApp": false
+  }
 }
