@@ -11,6 +11,10 @@ export default defineNuxtModule({
       client: process.env.KEYCLOAK_CLIENT ?? "",
     };
 
+    nuxt.options.runtimeConfig.public.directus = {
+      url: process.env.DIRECTUS_URL ?? "",
+    };
+
     // here we need to setup our components
     nuxt.hook("components:dirs", (dirs) => {
       dirs.push({
