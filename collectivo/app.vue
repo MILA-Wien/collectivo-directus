@@ -1,5 +1,10 @@
 <template>
   <div>
-    <nx3-btn> smile 12 </nx3-btn>
+    <NuxtLayout>
+      <NuxtLoadingIndicator
+        color="repeating-linear-gradient(to right,#F21BB9
+    0%,#6366f1 100%)" />
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>

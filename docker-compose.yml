@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  directus:
+    image: directus/directus:10.5.3
+    ports:
+      - 8055:8055
+    volumes:
+      - ./directus/database:/directus/database
+      - ./directus/extensions:/directus/extensions
+      - ./directus/uploads:/directus/uploads
+    links:
+      - keycloak
+    environment:
+      KEY: "0fda9121-269d-44bd-91f2-4ff05be14b4b"
+      SECRET: "86cb4a76-a4c6-4ce7-8181-b0445d95675c"
+
+      DB_CLIENT: "sqlite3"
+      DB_FILENAME: "/directus/database/data.db"
+
+      ADMIN_EMAIL: "admin@example.com"
+      ADMIN_PASSWORD: "d1r3ctu5"
+
+      CORS_ENABLED: "true"
+      EXTENSIONS_AUTO_RELOAD: "true"
+
+      AUTH_PROVIDERS: "keycloak"
+      AUTH_KEYCLOAK_DRIVER: "openid"
+      AUTH_KEYCLOAK_CLIENT_ID: "directus"
+      AUTH_KEYCLOAK_CLIENT_SECRET: "**********"
+      AUTH_KEYCLOAK_ISSUER_URL: "http://keycloak:8080/realms/collectivo/.well-known/openid-configuration"
+      AUTH_KEYCLOAK_IDENTIFIER_KEY: "email"
+      AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: "true"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      ROOT_LOGLEVEL: ALL
+      KEYCLOAK_LOGLEVEL: DEBUG
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/realms/master"]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import:ro
+      - ./keycloak/export:/tmp/export
+      - ./keycloak/healthcheck.sh:/healthcheck.sh
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"

@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nuxt/kit": "^3.6.5"
+    "@directus/sdk": "^11.0.2",
+    "@nuxt/kit": "^3.6.5",
+    "keycloak-js": "^22.0.1"
   }
 }

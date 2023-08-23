@@ -1,25 +1,7 @@
 {
   "folders": [
     {
-      "path": "directus"
-    },
-    {
       "path": "."
-    },
-    {
-      "path": "nuxt"
-    },
-    {
-      "path": "my-module"
-    },
-    {
-      "path": "nuxt-mono"
-    },
-    {
-      "path": "mono2"
-    },
-    {
-      "path": "nuxt-single"
     }
   ],
   "settings": {
