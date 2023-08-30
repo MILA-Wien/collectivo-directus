@@ -15,11 +15,9 @@ export default defineNuxtModule({
   async setup(_, nuxt) {
     const { resolve } = createResolver(import.meta.url);
 
-    // We can inject our CSS file which includes Tailwind's directives
+    // Configure styles
     nuxt.options.css.push(resolve("./assets/styles.css"));
-
     await installModule("@nuxtjs/tailwindcss", {
-      // module configuration
       exposeConfig: true,
       config: {
         darkMode: "media",
@@ -78,6 +76,6 @@ export default defineNuxtModule({
     });
 
     // Add plugins
-    addPlugin(resolve(__dirname, "./plugins/keycloak.client"));
+    addPlugin(resolve(__dirname, "./plugins/directus.client"));
   },
 });

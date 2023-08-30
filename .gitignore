@@ -1,6 +1,7 @@
-# Collectivo-specific
+# Local work folders
 archive/
 uploads/
+workbench/
 
 # Nuxt dev/build outputs
 .output
