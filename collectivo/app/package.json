@@ -11,14 +11,10 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@types/node": "^18.17.3",
-    "autoprefixer": "^10.4.15",
-    "nuxt": "^3.6.5",
-    "postcss": "^8.4.28",
-    "tailwindcss": "^3.3.3"
+    "nuxt": "^3.6.5"
   },
   "dependencies": {
-    "@collectivo/kit": "workspace:^",
-    "@directus/sdk": "^11.0.2",
-    "keycloak-js": "^22.0.1"
+    "@collectivo/core": "workspace:^",
+    "@collectivo/memberships": "workspace:^"
   }
 }

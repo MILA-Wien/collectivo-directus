@@ -22,7 +22,10 @@ services:
       ADMIN_PASSWORD: "d1r3ctu5"
 
       CORS_ENABLED: "true"
+      CORS_ORIGIN: "true"
       EXTENSIONS_AUTO_RELOAD: "true"
+
+      PUBLIC_URL: "http://localhost:8055"
 
       AUTH_PROVIDERS: "keycloak"
       AUTH_KEYCLOAK_DRIVER: "openid"
@@ -31,6 +34,10 @@ services:
       AUTH_KEYCLOAK_ISSUER_URL: "http://keycloak:8080/realms/collectivo/.well-known/openid-configuration"
       AUTH_KEYCLOAK_IDENTIFIER_KEY: "email"
       AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: "true"
+
+      # REFRESH_TOKEN_COOKIE_DOMAIN: "http://localhost:8055"
+      REFRESH_TOKEN_COOKIE_SECURE: "false"
+      REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.1

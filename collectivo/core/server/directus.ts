@@ -5,6 +5,7 @@ import {
   rest,
   readItems,
   createCollection,
+  readCollection,
   createItem,
   createField,
 } from "@directus/sdk";
@@ -38,7 +39,7 @@ const collection = <DirectusCollection<{}>>{
 // Run migrations on Directus
 export async function runMigrations() {
   const client = await getDirectusAdminClient();
-  console.log("Directus client:", client);
+
   // const result = await client.request(readItems("articles"));
   // console.log("Directus result:", result);
   const result3 = await client.request(
@@ -60,14 +61,16 @@ export async function runMigrations() {
 
   const result2 = await client.request(
     createCollection({
-      collection: "myCollection",
+      collection: "mycollection4",
       schema: {
-        schema: "test-schema",
-        name: "test-schema",
+        name: "mycollection4",
+        schema: "mycollection4",
         comment: null,
       },
       meta: {},
     })
   );
-  console.log("Directus result COLL:", result2);
+
+  const result4 = await client.request(readCollection("articles"));
+  console.log("Directus result COLL:", result4);
 }

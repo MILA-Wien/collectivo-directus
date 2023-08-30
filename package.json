@@ -3,8 +3,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm run -r dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "docker compose up -d; pnpm run -r --parallel dev",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "proxy": "lcp --proxyUrl http://localhost:8055 --credentials --origin http://localhost:3000"
   },
   "keywords": [],
   "author": "",

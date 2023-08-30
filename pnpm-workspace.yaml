@@ -1,4 +1,2 @@
 packages:
-  # all packages in sub dirs of packages/ and apps/
-  - "collectivo"
-  - "extensions/**"
+  - "collectivo/**"
