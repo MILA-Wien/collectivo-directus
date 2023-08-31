@@ -2,16 +2,20 @@
   <div class="p-4 w-full flex flex-col gap-4">
     <div>Main Menu</div>
     <div v-for="item in menuItems">
-      <div v-if="item.external">
-        <a
-          :href="item.link"
-          :target="item.blank ?? true ? '_blank' : '_self'"
-          >{{ item.label }}</a
-        >
-      </div>
-      <div v-else>
-        <component :is="item.icon" class="h-6 w-6 text-blue-500" />
-        <NuxtLink :to="item.link">{{ item.label }}</NuxtLink>
+      <div v-if="item.filter ? item.filter() : true">
+        <div v-if="item.external">
+          <a
+            :href="item.link"
+            :target="item.blank ?? true ? '_blank' : '_self'"
+            >{{ item.label }}</a
+          >
+        </div>
+        <div v-else>
+          <NuxtLink :to="item.link"
+            ><component :is="item.icon" class="h-5 w-5" />
+            {{ item.label }}
+          </NuxtLink>
+        </div>
       </div>
     </div>
     <div>
@@ -20,7 +24,6 @@
         >Login</a
       >
     </div>
-    <div></div>
   </div>
 </template>
 

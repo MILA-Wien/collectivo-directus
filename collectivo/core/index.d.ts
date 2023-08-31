@@ -1,3 +1,5 @@
+import { FunctionalComponent } from "vue";
+
 declare global {
   interface CollectivoMenu {
     [key: string]: CollectivoMenuItem;
@@ -6,11 +8,11 @@ declare global {
   interface CollectivoMenuItem {
     label: string;
     link?: string;
-    icon?: any;
+    icon?: FunctionalComponent;
     external?: boolean;
     blank?: boolean;
     children?: CollectivoMenuItem[];
-    filter?: (item: CollectivoMenuItem) => boolean;
+    filter?: () => boolean;
   }
 }
 
