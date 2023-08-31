@@ -4,17 +4,17 @@ An experimental setup for Collectivo based on [Directus](https://directus.io/), 
 
 ## Overview
 
-Collectivo is a Nuxt app. All functionality is provided by [modules](https://nuxt.com/docs/guide/concepts/modules). The core module is located in `collectivo/core`.
-Additional modules are located in `collectivo/extensions`. Custom modules can be added either locally or as an npm package.
+Collectivo is a set of modular [Nuxt Layers](https://nuxt.com/docs/guide/going-further/layers) that can be added to a [Nuxt App](https://nuxt.com/) and easily be combined with custom code for each project.
+
+The core module provides the basic functionality for a Collectivo app, including authentication with a keycloak server and connection to a directus database. Extension modules can import code from the core module as well as from each other (although circular dependencies are of course not possible). Database migrations can be defined by each module and are run automatically on startup.
 
 ## Structure
 
-- collectivo
-    - app - Nuxt app (without content)
-    - kit - Utilities for modules
-    - core - Module with core functionality
+- collectivo (Nuxt)
+    - app - An application of Collectivo with all modules
+    - core - Core functionality
     - extensions - Optional modules
-- directus - API & Admin console
+- directus - Database, API & Admin app
 - keycloak - Authentication server
 
 ## Development
@@ -27,10 +27,11 @@ Install the following requirements:
 Start a development system with:
 
 ```
+pnpm install
 pnpm dev
 ```
 
-This creates a docker container for directus and keycloak, and then starts a development server for collectivo and its extensions.
+This creates a docker container for Directus and Keycloak, and then starts a development server for the Collectivo app.
 
 Available services:
 

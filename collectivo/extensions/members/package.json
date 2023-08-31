@@ -1,16 +1,17 @@
 {
-  "name": "nuxt-app",
-  "private": true,
+  "name": "@collectivo/members",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./nuxt.config.ts",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --p 3001",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@collectivo/core": "workspace:*",
-    "@collectivo/members": "workspace:*"
+    "@collectivo/core": "workspace:*"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

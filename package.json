@@ -1,13 +1,14 @@
 {
-  "name": "mono2",
-  "description": "",
+  "name": "collectivo-monorepo",
+  "private": true,
+  "description": "Collectivo packages & development environment.",
   "main": "index.js",
   "scripts": {
     "dev": "docker compose up -d; pnpm run -r --parallel dev",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "proxy": "lcp --proxyUrl http://localhost:8055 --credentials --origin http://localhost:3000"
+    "dev nuxt": "pnpm run -r --parallel",
+    "dev docker": "docker compose up -d",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Joël Foramitti",
+  "license": "AGPL-3.0"
 }

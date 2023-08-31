@@ -1,11 +1,6 @@
-<script setup lang="ts">
-const layout = "collectivo-default";
-</script>
-
 <template>
   <div>
-    <NuxtLayout :name="layout">
-      <NuxtPage />
-    </NuxtLayout>
+    <!-- Markup shared across all pages, ex: NavBar -->
+    <NuxtPage />
   </div>
 </template>
