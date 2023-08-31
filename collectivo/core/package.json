@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@directus/sdk": "^11.0.3",
-    "@headlessui/vue": "^1.7.16"
+    "@headlessui/vue": "^1.7.16",
+    "@heroicons/vue": "^2.0.18"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

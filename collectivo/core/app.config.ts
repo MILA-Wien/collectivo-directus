@@ -1,15 +1,8 @@
 export default defineAppConfig({
-  bar: "base",
-  baz: "base",
-  baks: "base",
-  mainMenuItems: {
+  mainMenuItems: <CollectivoMenu>{
     home: {
       label: "Home",
-    },
-  },
-  arrayNested: {
-    nested: {
-      array: ["base", "base", "base"],
+      link: "/",
     },
   },
 });
