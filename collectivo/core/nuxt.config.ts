@@ -14,8 +14,16 @@ export default defineNuxtConfig({
     },
   },
   hooks: {
-    ready: () => {
+    ready: async (nuxt) => {
       console.log(`Collectivo ${pkg.version}`);
+
+      for (const layer of nuxt.options._layers) {
+        // You can check for a custom directory existence to extend for each layer
+        console.log("Custom extension for", layer.cwd);
+        console.log(
+          layer.config.migrations ? layer.config.migrations() : "no migrations"
+        );
+      }
     },
   },
   modules: ["@nuxtjs/tailwindcss"],
