@@ -1,4 +1,3 @@
-import { defineNuxtPlugin, useRuntimeConfig } from "#app";
 import {
   createDirectus,
   authentication,
@@ -16,13 +15,14 @@ async function authorizeDirectus(directus: AuthenticationClient<any>) {
 }
 
 export default defineNuxtPlugin({
-  name: "directus",
+  name: "directus-client",
   enforce: "pre",
-  async setup(_) {
+  async setup(nuxtApp) {
+    console.log("Setting up Directus client plugin");
     const runtimeConfig = useRuntimeConfig();
     var directus;
     try {
-      directus = createDirectus(runtimeConfig.public.directus.url)
+      directus = createDirectus(runtimeConfig.public.directusUrl as string)
         .with(authentication())
         .with(rest());
       authorizeDirectus(directus);

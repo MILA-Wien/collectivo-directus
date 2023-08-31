@@ -3,9 +3,20 @@
   "version": "1.0.0",
   "type": "module",
   "main": "./nuxt.config.ts",
-  "dependencies": {},
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --p 3001",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@directus/sdk": "^11.0.3",
+    "@headlessui/vue": "^1.7.16"
+  },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.8.0",
     "nuxt": "^3.7.0"
   }
 }
