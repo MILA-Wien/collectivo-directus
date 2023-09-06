@@ -8,6 +8,7 @@
     "dev": "nuxt dev --p 3002",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "test": "vitest run",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -15,6 +16,8 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "nuxt": "^3.7.0"
+    "@nuxt/test-utils": "^3.7.1",
+    "nuxt": "^3.7.0",
+    "vitest": "^0.34.3"
   }
 }

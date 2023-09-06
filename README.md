@@ -41,3 +41,11 @@ Available services:
     - Tailwind: http://localhost:3000/_tailwind/
 - Directus: http://localhost:8055/
 - Keycloak: http://localhost:8080/
+
+### Testing
+
+To run unit tests, use:
+
+```
+pnpm test
+```

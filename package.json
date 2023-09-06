@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm run -r --parallel dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pnpm run -r --parallel test"
   },
   "author": "Joël Foramitti",
   "license": "AGPL-3.0"
