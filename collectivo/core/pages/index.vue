@@ -1,4 +1,6 @@
 <template>
+  {{ $t("welcome") }}
+  {{ $t("members") }}
   <Dashboard></Dashboard>
 </template>
 

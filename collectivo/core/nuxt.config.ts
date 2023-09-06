@@ -4,6 +4,7 @@ import pkg from "./package.json";
 export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
+    collectivoVersion: pkg.version,
     runMigrations: process.env.COLLECTIVO_RUN_SETUP == "true" ?? false,
     directusAdminEmail: process.env.DIRECTUS_ADMIN_EMAIL ?? "",
     directusAdminPassword: process.env.DIRECTUS_ADMIN_PASSWORD ?? "",
@@ -15,5 +16,10 @@ export default defineNuxtConfig({
     },
   },
   hooks: {},
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/i18n"],
+  // https://v8.i18n.nuxtjs.org/guide/layers
+  i18n: {
+    langDir: "./lang",
+    locales: [{ code: "en", file: "en.json" }],
+  },
 });
