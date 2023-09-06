@@ -1,4 +1,8 @@
 <template>
+  <Head>
+    <Title v-if="pageTitle == ''">{{ appConfig.projectName }}</Title>
+    <Title v-else>{{ pageTitle }} - {{ appConfig.projectName }}</Title>
+  </Head>
   <div id="collectivo-frame" class="flex h-screen bg-mila font-sans">
     <!-- Backdrop (when sidebar is open) -->
     <div
@@ -36,6 +40,8 @@
 
 <script setup>
 import { ref } from "vue";
+const appConfig = useAppConfig();
+const pageTitle = usePageTitle();
 const getSideBarOpen = ref(false);
 function toggleSideBar() {
   menuStore.setSideBarOpen(getSideBarOpen.value ? false : true);

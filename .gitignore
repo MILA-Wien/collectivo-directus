@@ -3,6 +3,9 @@ archive/
 uploads/
 workbench/
 
+# Directus
+directus/database/
+
 # Nuxt dev/build outputs
 .output
 .data
