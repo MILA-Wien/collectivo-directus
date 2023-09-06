@@ -27,6 +27,8 @@ Install the following requirements:
 Start a development system with:
 
 ```
+docker compose build
+docker compose up -d
 pnpm install
 pnpm dev
 ```

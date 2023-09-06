@@ -14,6 +14,17 @@ declare global {
     children?: CollectivoMenuItem[];
     filter?: () => boolean;
   }
+
+  interface CollectivoCoreExtension {
+    id: number;
+    core_name: string;
+    core_version: string;
+    core_migration: number;
+  }
+
+  interface CollectivoCoreSchema {
+    core_extensions: CollectivoCoreExtension[];
+  }
 }
 
 declare module "nuxt/schema" {

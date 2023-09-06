@@ -4,7 +4,7 @@ import pkg from "./package.json";
 export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
-    runMigrations: process.env.COLLECTIVO_RUN_MIGRATIONS == "true" ?? false,
+    runMigrations: process.env.COLLECTIVO_RUN_SETUP == "true" ?? false,
     directusAdminEmail: process.env.DIRECTUS_ADMIN_EMAIL ?? "",
     directusAdminPassword: process.env.DIRECTUS_ADMIN_PASSWORD ?? "",
     public: {
