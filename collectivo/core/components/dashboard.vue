@@ -1,23 +1,19 @@
 <template>
-  I AM THE DASHBOARD
-  {{ $t("Membership") }}
   <div>
-    Extensions:
+    Installed extensions:
     <div v-if="error">Error: {{ error }}</div>
     <div v-else-if="extensions === null">Loading</div>
-    <div v-else>{{ extensions }}</div>
+    <div v-else>
+      <div v-for="extension in extensions" :key="extension.id">
+        {{ extension.core_name }} - {{ extension.core_version }}
+      </div>
+    </div>
   </div>
 </template>
 
-<script setup>
-import { readItems } from "@directus/sdk";
-const { $directus } = useNuxtApp();
-const extensions = ref(null);
+<script setup lang="ts">
+const { t } = useI18n();
 const error = ref(null);
-
-const fetchData = async () => {
-  extensions.value = await $directus.request(readItems("core_extensions"));
-};
-
-fetchData().catch((e) => (error.value = e));
+const extensions = useExtensions();
+if (extensions.value === null) getExtensions().catch((e) => (error.value = e));
 </script>

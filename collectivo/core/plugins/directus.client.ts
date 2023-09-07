@@ -17,12 +17,14 @@ async function authorizeDirectus(directus: AuthenticationClient<any>) {
 export default defineNuxtPlugin({
   name: "directus-client",
   enforce: "pre",
-  async setup(nuxtApp) {
+  async setup() {
     console.log("Setting up Directus client plugin");
     const runtimeConfig = useRuntimeConfig();
     var directus;
     try {
-      directus = createDirectus(runtimeConfig.public.directusUrl as string)
+      directus = createDirectus<CollectivoCoreSchema>(
+        runtimeConfig.public.directusUrl as string
+      )
         .with(authentication())
         .with(rest());
       authorizeDirectus(directus);
@@ -32,7 +34,7 @@ export default defineNuxtPlugin({
     }
     return {
       provide: {
-        directus: directus,
+        directus: directus ? directus : null,
       },
     };
   },
