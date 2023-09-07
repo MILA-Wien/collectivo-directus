@@ -1,6 +1,6 @@
 <template>
   I AM THE DASHBOARD
-
+  {{ $t("Membership") }}
   <div>
     Extensions:
     <div v-if="error">Error: {{ error }}</div>

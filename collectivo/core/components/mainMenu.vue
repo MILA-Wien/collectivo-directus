@@ -13,7 +13,7 @@
         <div v-else>
           <NuxtLink :to="item.link"
             ><component :is="item.icon" class="h-5 w-5" />
-            {{ $t(item.label) }}
+            {{ t(item.label) }}
           </NuxtLink>
         </div>
       </div>
@@ -31,13 +31,12 @@
         <option value="en">en</option>
         <option value="de">de</option>
       </select>
-      <p>{{ $t("Welcome") }}</p>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 const appConfig = useAppConfig();
 const menuItems = appConfig.mainMenuItems;
 </script>
