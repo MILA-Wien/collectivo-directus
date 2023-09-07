@@ -19,7 +19,10 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/i18n"],
   // https://v8.i18n.nuxtjs.org/guide/layers
   i18n: {
+    lazy: true,
     langDir: "./lang",
     locales: [{ code: "en", file: "en.json" }],
+    strategy: "no_prefix",
+    defaultLocale: "en",
   },
 });
