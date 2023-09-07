@@ -21,8 +21,13 @@ export default defineNuxtConfig({
   i18n: {
     lazy: true,
     langDir: "./lang",
-    locales: [{ code: "en", file: "en.json" }],
+    locales: [
+      { code: "en", file: "en.json" },
+      { code: "de", file: "de.json" },
+    ],
     strategy: "no_prefix",
-    defaultLocale: "en",
+    defaultLocale: process.env.COLLECTIVO_DEFAULT_LOCAL ?? "en",
+    detectBrowserLanguage:
+      process.env.COLLECTIVO_USE_BROWSER_LOCAL == "true" ?? false,
   },
 });

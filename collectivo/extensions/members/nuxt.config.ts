@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   extends: ["@collectivo/core"],
   i18n: {
     langDir: "./lang",
-    locales: [{ code: "en", file: "en.json" }],
+    locales: [
+      { code: "en", file: "en.json" },
+      { code: "de", file: "de.json" },
+    ],
   },
 });
