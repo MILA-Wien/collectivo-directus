@@ -26,7 +26,7 @@
       id="collectivo-main"
       class="flex-1 flex flex-col overflow-hidden default-layout bg-slate-300">
       <!-- Header -->
-      <div class="w-full bg-slate-200 p-4">HEADER</div>
+      <MainHeader />
 
       <!-- Content -->
       <main class="flex-1 overflow-x-hidden overflow-y-auto">

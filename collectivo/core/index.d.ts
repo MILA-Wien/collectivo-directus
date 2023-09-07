@@ -8,11 +8,14 @@ declare global {
   interface CollectivoMenuItem {
     label: string;
     link?: string;
+    linkFromRuntimeVar?: string;
     icon?: FunctionalComponent;
     external?: boolean;
-    blank?: boolean;
+    target?: string;
     children?: CollectivoMenuItem[];
-    filter?: () => boolean;
+    order?: number; // Defaults to 100
+    requires_auth?: boolean;
+    requires_role?: string;
   }
 
   interface CollectivoCoreExtension {

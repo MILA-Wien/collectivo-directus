@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-setPageTitle("Dashboard");
+setPageTitle("Home");
 </script>

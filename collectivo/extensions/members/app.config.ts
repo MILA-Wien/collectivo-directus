@@ -4,13 +4,9 @@ export default defineAppConfig({
   mainMenuItems: {
     membership: {
       label: "Membership",
-      link: "/membership/",
+      link: "/membership",
       icon: IdentificationIcon,
-      filter: () => {
-        // Use context for filter
-        // const nuxtApp = useNuxtApp();
-        return true;
-      },
+      order: 10,
     },
   },
 });
