@@ -18,7 +18,7 @@
       "
       class="fixed inset-y-0 left-0 z-30 w-60 overflow-y-auto scrollbar-hide transition duration-300 transform bg-white lg:translate-x-0 lg:static lg:inset-0"
       id="collectivo-sidebar">
-      <MainMenu />
+      <Sidebar />
     </div>
 
     <!-- Main -->
@@ -26,7 +26,7 @@
       id="collectivo-main"
       class="flex-1 flex flex-col overflow-hidden default-layout bg-slate-300">
       <!-- Header -->
-      <MainHeader />
+      <Header />
 
       <!-- Content -->
       <main class="flex-1 overflow-x-hidden overflow-y-auto">
@@ -40,6 +40,8 @@
 
 <script setup>
 import { ref } from "vue";
+import Header from "./components/defaultHeader.vue";
+import Sidebar from "./components/defaultSidebar.vue";
 const { t } = useI18n();
 const appConfig = useAppConfig();
 const pageTitle = usePageTitle();
