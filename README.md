@@ -51,6 +51,7 @@ pnpm update -r -L
 Publish all packages (remove --dry-run)
 
 ```
+pnpm login
 pnpm publish -r --access=public --dry-run
 ```
 
