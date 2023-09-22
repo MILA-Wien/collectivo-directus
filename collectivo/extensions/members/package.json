@@ -2,6 +2,9 @@
   "name": "@collectivo/members",
   "version": "0.0.1",
   "type": "module",
+  "license": "AGPL-3.0",
+  "author": "Joël Foramitti",
+  "homepage": "https://collectivo.io",
   "main": "./nuxt.config.ts",
   "scripts": {
     "build": "nuxt build",
