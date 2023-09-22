@@ -42,6 +42,18 @@ Available services:
 - Directus: http://localhost:8055/
 - Keycloak: http://localhost:8080/
 
+Udate dependencies
+
+```
+pnpm update -r -L
+```
+
+Publish all packages (remove --dry-run)
+
+```
+pnpm publish -r --access=public --dry-run
+```
+
 ### Testing
 
 To run unit tests, use:
