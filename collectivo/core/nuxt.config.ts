@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     directusAdminEmail: process.env.DIRECTUS_ADMIN_EMAIL ?? "",
     directusAdminPassword: process.env.DIRECTUS_ADMIN_PASSWORD ?? "",
     public: {
+      collectivoUrl: process.env.COLLECTIVO_URL ?? "",
       keycloakUrl: process.env.KEYCLOAK_URL ?? "",
       keycloakRealm: process.env.KEYCLOAK_REALM ?? "",
       keycloakClient: process.env.KEYCLOAK_CLIENT ?? "",

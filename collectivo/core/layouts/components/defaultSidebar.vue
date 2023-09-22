@@ -21,13 +21,12 @@
         </div>
       </div>
     </div>
-    <div>
-      <a
-        href="http://localhost:8055/auth/login/keycloak?redirect=http://localhost:3000"
-        >Login Keycloak</a
-      >
+    <div v-if="!$isAuthenticated">
+      <a :href="loginPath">Login</a>
     </div>
-
+    <div v-else>
+      <a :href="logoutPath">Logout</a>
+    </div>
     <div>
       <form>
         <select v-model="locale">
@@ -42,8 +41,14 @@
 <script setup lang="ts">
 const { t, locale } = useI18n();
 const appConfig = useAppConfig();
+const { $isAuthenticated } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
 
+// Prepare SSO links
+const loginPath = `${runtimeConfig.public.directusUrl}/auth/login/keycloak?redirect=${runtimeConfig.public.collectivoUrl}`;
+const logoutPath = `${runtimeConfig.public.keycloakUrl}/realms/collectivo/protocol/openid-connect/logout`;
+
+// Prepare menu items
 const menuItems = appConfig.mainMenuItems;
 const sortedMenuItems = Object.values(menuItems).sort(
   (a, b) => (a.order ?? 100) - (b.order ?? 100)
