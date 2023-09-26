@@ -1,6 +1,6 @@
 {
   "name": "@collectivo/members",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "license": "AGPL-3.0",
   "author": "Joël Foramitti",
@@ -11,8 +11,7 @@
     "dev": "nuxt dev --p 3002",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "test": "vitest run",
-    "postinstall": "nuxt prepare"
+    "test": "vitest run"
   },
   "dependencies": {
     "@collectivo/core": "workspace:*"
