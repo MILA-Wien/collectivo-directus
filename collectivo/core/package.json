@@ -11,8 +11,7 @@
     "dev": "nuxt dev --p 3001",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "test": "vitest run",
-    "postinstall": "nuxt prepare"
+    "test": "vitest run"
   },
   "dependencies": {
     "@directus/sdk": "^12.0.0",
