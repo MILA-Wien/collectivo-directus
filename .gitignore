@@ -5,6 +5,9 @@ workbench/
 
 # Directus
 directus/database/
+directus/uploads/*
+keycloak/export
+keycloak/imported/imported.flag
 
 # Nuxt dev/build outputs
 .output

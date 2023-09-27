@@ -33,6 +33,8 @@ pnpm install
 pnpm dev
 ```
 
+If directus cannot write to the database, you might need to call `sudo chmod -R 777 directus/database` once.
+
 This creates a docker container for Directus and Keycloak, and then starts a development server for the Collectivo app.
 
 Available services:

@@ -2,7 +2,7 @@ version: "3"
 
 services:
   directus:
-    image: directus/directus:10.5.3
+    image: directus/directus:10.6.3
     ports:
       - 8055:8055
     volumes:
@@ -10,6 +10,8 @@ services:
       - ./directus/extensions:/directus/extensions
       - ./directus/uploads:/directus/uploads
     links:
+      - keycloak
+    depends_on:
       - keycloak
     environment:
       KEY: "0fda9121-269d-44bd-91f2-4ff05be14b4b"
@@ -41,22 +43,50 @@ services:
 
       LOG_LEVEL: "debug"
 
+  keycloak-db:
+    image: postgres:15.4-alpine
+    container_name: keycloak-db
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      ROOT_LOGLEVEL: ALL
-      KEYCLOAK_LOGLEVEL: DEBUG
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/realms/master"]
-      interval: 5s
-      timeout: 2s
-      retries: 15
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_FRONTEND_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_IMPORT: /tmp/collectivo-realm.json
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_DB_SCHEMA: public
+      KC_DB_URL_DATABASE: "keycloak"
+      KC_DB_URL_HOST: "keycloak-db"
+      KC_DB_URL_PORT: 5432
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
     volumes:
       - ./keycloak/import:/opt/keycloak/data/import:ro
       - ./keycloak/export:/tmp/export
       - ./keycloak/healthcheck.sh:/healthcheck.sh
     command: start-dev --import-realm
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/realms/master"]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+    depends_on:
+      - keycloak-db
     ports:
       - "8080:8080"
+
+volumes:
+  keycloak-db-data:

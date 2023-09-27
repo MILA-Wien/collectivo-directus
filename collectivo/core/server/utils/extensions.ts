@@ -42,7 +42,7 @@ export async function registerExtension(ext: ExtensionConfig) {
 async function registerExtension_(ext: ExtensionConfig) {
   // Check if setup should be run
   // This blocks extension dev servers as they have no .env file
-  if (!useRuntimeConfig().runMigrations) {
+  if (useRuntimeConfig().runMigrations !== true) {
     return;
   }
 
