@@ -27,6 +27,18 @@ var extensions: any = null;
 
 // Register extension and run setup and migration functions
 export async function registerExtension(ext: ExtensionConfig) {
+  try {
+    return await registerExtension_(ext);
+  } catch (error) {
+    logger.log({
+      level: "error",
+      message: `Error registering extension: ${ext.extensionName}`,
+      error: error,
+    });
+  }
+}
+
+async function registerExtension_(ext: ExtensionConfig) {
   // Check if setup should be run
   // This blocks extension dev servers as they have no .env file
   if (!useRuntimeConfig().runMigrations) {
@@ -59,8 +71,16 @@ export async function registerExtension(ext: ExtensionConfig) {
         // Set up extension collection if it doesn't exist
         await createOrUpdateExtensionsCollection();
       } catch (e2) {
-        console.error(e);
-        console.error(e2);
+        logger.log({
+          level: "error",
+          message: `Error reading or creating extensions collection`,
+          error: e,
+        });
+        logger.log({
+          level: "error",
+          message: `Error reading or creating extensions collection`,
+          error: e2,
+        });
         throw new Error("Error reading or creating extensions collection");
       }
       extensions = [];
@@ -72,7 +92,7 @@ export async function registerExtension(ext: ExtensionConfig) {
     if (ext.preMigrations) await ext.preMigrations();
   } catch (errorPromise) {
     const error = await errorPromise;
-    console.error(`Error running pre-migrations of ${ext.extensionName}`);
+    logger.error(`Error running pre-migrations of ${ext.extensionName}`);
     throw error;
   }
 
@@ -93,7 +113,7 @@ export async function registerExtension(ext: ExtensionConfig) {
         })
       );
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       throw new Error(`Error creating extension ${ext.extensionName}`);
     }
   }
@@ -112,7 +132,7 @@ export async function registerExtension(ext: ExtensionConfig) {
           })
         );
       } catch (e) {
-        console.error(
+        logger.error(
           `Error running migration ${migrationState} of ${ext.extensionName}`
         );
         throw e;
@@ -124,14 +144,14 @@ export async function registerExtension(ext: ExtensionConfig) {
   try {
     if (ext.postMigrations) await ext.postMigrations();
   } catch (error) {
-    console.error(`Error running post-migrations of ${ext.extensionName}`);
+    logger.error(`Error running post-migrations of ${ext.extensionName}`);
     throw error;
   }
 
   // Add setup to memory for dependency checks of upcoming setup functions
   extensionConfigs.push(ext);
 
-  console.debug(`Setup of ${ext.extensionName} done`);
+  logger.debug(`Setup of ${ext.extensionName} done`);
 }
 
 // Create or update extension collection

@@ -10,7 +10,7 @@ export default defineNitroPlugin((nitroApp) => {
 });
 
 async function corePreMigrations() {
-  console.log("Core Pre Migration Function called");
+  logger.info("Core Pre Migration Function called");
   //await createExtensionCollection();
 
   // Settings POST collection
