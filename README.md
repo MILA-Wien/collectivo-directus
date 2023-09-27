@@ -27,6 +27,8 @@ Install the following requirements:
 Start a development system with:
 
 ```
+cp .env.example .env
+cp collectivo/.env.example collectivo/.env
 docker compose build
 docker compose up -d
 pnpm install
