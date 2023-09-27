@@ -2,6 +2,7 @@ import { up as m1 } from "../migrations/001_test";
 
 export default defineNitroPlugin((nitroApp) => {
   // This will run every time the server starts
+  logger.info("Core server plugin called");
   registerExtension({
     extensionName: "core",
     preMigrations: corePreMigrations, // Run at server start before migrations

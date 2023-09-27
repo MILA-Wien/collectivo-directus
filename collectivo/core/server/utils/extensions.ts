@@ -27,6 +27,7 @@ var extensions: any = null;
 
 // Register extension and run setup and migration functions
 export async function registerExtension(ext: ExtensionConfig) {
+  logger.info(`Registering extension: ${ext.extensionName}`);
   try {
     return await registerExtension_(ext);
   } catch (error) {
@@ -151,7 +152,7 @@ async function registerExtension_(ext: ExtensionConfig) {
   // Add setup to memory for dependency checks of upcoming setup functions
   extensionConfigs.push(ext);
 
-  logger.debug(`Setup of ${ext.extensionName} done`);
+  logger.info(`Setup of ${ext.extensionName} done`);
 }
 
 // Create or update extension collection
