@@ -13,6 +13,7 @@ services:
       - keycloak
     depends_on:
       - keycloak
+      # condition: service_healthy
     environment:
       KEY: "0fda9121-269d-44bd-91f2-4ff05be14b4b"
       SECRET: "86cb4a76-a4c6-4ce7-8181-b0445d95675c"
@@ -77,7 +78,8 @@ services:
       - ./keycloak/healthcheck.sh:/healthcheck.sh
     command: start-dev --import-realm
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/realms/master"]
+      # TODO: Not working
+      test: ["CMD", "curl", "--fail", "http://keycloak:8080/realms/master"]
       interval: 5s
       timeout: 2s
       retries: 15

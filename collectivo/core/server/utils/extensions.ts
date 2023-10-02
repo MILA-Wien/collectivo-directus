@@ -1,20 +1,7 @@
-import {
-  createItem,
-  readItems,
-  updateItem,
-  createCollection,
-  createField,
-  DirectusCollection,
-  DirectusField,
-  NestedPartial,
-  readCollection,
-  updateCollection,
-  updateField,
-} from "@directus/sdk";
-
 // Define extension setup function
 export interface ExtensionConfig {
   extensionName: string;
+  extensionVersion: string;
   dependencies?: string[];
   preMigrations?: () => any;
   migrations?: (() => any)[];
@@ -23,13 +10,15 @@ export interface ExtensionConfig {
 
 // Shared variables between extensions
 var extensionConfigs: ExtensionConfig[] = [];
-var extensions: any = null;
+
+export function useExtensionConfigs() {
+  return extensionConfigs;
+}
 
 // Register extension and run setup and migration functions
-export async function registerExtension(ext: ExtensionConfig) {
-  logger.info(`Registering extension: ${ext.extensionName}`);
+export function registerExtension(ext: ExtensionConfig) {
   try {
-    return await registerExtension_(ext);
+    registerExtension_(ext);
   } catch (error) {
     logger.log({
       level: "error",
@@ -39,11 +28,25 @@ export async function registerExtension(ext: ExtensionConfig) {
   }
 }
 
-async function registerExtension_(ext: ExtensionConfig) {
+function registerExtension_(ext: ExtensionConfig) {
   // Check if setup should be run
   // This blocks extension dev servers as they have no .env file
   if (useRuntimeConfig().runMigrations !== true) {
     return;
+  }
+
+  // Check that extension name does not contain an underscore
+  if (ext.extensionName.includes("_")) {
+    throw new Error(
+      `Extension name '${ext.extensionName}' should not contain underscores`
+    );
+  }
+
+  // Check that extension version is a valid semver version
+  if (!/^\d+\.\d+\.\d+$/.test(ext.extensionVersion)) {
+    throw new Error(
+      `Extension version '${ext.extensionVersion}' is not a valid semver version`
+    );
   }
 
   // Check if extension is already registered in this server instance
@@ -62,154 +65,6 @@ async function registerExtension_(ext: ExtensionConfig) {
     }
   }
 
-  // Load registered extensions from db
-  const directus = await useDirectus();
-  if (extensions === null) {
-    try {
-      extensions = await directus.request(readItems("core_extensions"));
-    } catch (e) {
-      try {
-        // Set up extension collection if it doesn't exist
-        await createOrUpdateExtensionsCollection();
-      } catch (e2) {
-        logger.log({
-          level: "error",
-          message: `Error reading or creating extensions collection`,
-          error: e,
-        });
-        logger.log({
-          level: "error",
-          message: `Error reading or creating extensions collection`,
-          error: e2,
-        });
-        throw new Error("Error reading or creating extensions collection");
-      }
-      extensions = [];
-    }
-  }
-
-  // Run pre-migration setup
-  try {
-    if (ext.preMigrations) await ext.preMigrations();
-  } catch (errorPromise) {
-    const error = await errorPromise;
-    logger.error(`Error running pre-migrations of ${ext.extensionName}`);
-    throw error;
-  }
-
-  // Get data of current extension
-  var extensionDb = extensions.find(
-    (f: any) => f.core_name === ext.extensionName
-  );
-  var migrationState = extensionDb ? extensionDb.core_migration : 0;
-
-  // Register extension if not found
-  if (!extensionDb) {
-    try {
-      extensionDb = await directus.request(
-        createItem("core_extensions", {
-          core_name: ext.extensionName,
-          core_version: "0.0.0",
-          core_migration: 0,
-        })
-      );
-    } catch (e) {
-      logger.error(e);
-      throw new Error(`Error creating extension ${ext.extensionName}`);
-    }
-  }
-
-  // Run missing migrations
-  if (ext.migrations) {
-    for (const migration of ext.migrations.slice(migrationState)) {
-      try {
-        await migration();
-
-        // Update migration state in db
-        migrationState++;
-        await directus.request(
-          updateItem("core_extensions", extensionDb.id, {
-            core_migration: migrationState,
-          })
-        );
-      } catch (e) {
-        logger.error(
-          `Error running migration ${migrationState} of ${ext.extensionName}`
-        );
-        throw e;
-      }
-    }
-  }
-
-  // Run post-migration extension setup
-  try {
-    if (ext.postMigrations) await ext.postMigrations();
-  } catch (error) {
-    logger.error(`Error running post-migrations of ${ext.extensionName}`);
-    throw error;
-  }
-
   // Add setup to memory for dependency checks of upcoming setup functions
   extensionConfigs.push(ext);
-
-  logger.info(`Setup of ${ext.extensionName} done`);
-}
-
-// Create or update extension collection
-async function createOrUpdateExtensionsCollection() {
-  const collection: NestedPartial<DirectusCollection<any>> = {
-    collection: "core_extensions",
-    schema: {
-      schema: "schema",
-      name: "schema",
-      comment: null,
-    },
-    meta: {
-      translations: [
-        {
-          language: "de-DE",
-          translation: "Erweiterungen",
-          singular: "Erweiterung",
-          plural: "Erweiterungen",
-        },
-      ],
-    },
-  };
-
-  const fields: NestedPartial<DirectusField<any>>[] = [
-    {
-      field: "core_name",
-      type: "string",
-      meta: {
-        required: true,
-        sort: 2, // 1 is id
-        note: "Name of the extension (should not contain underscores)",
-      },
-    },
-    {
-      field: "core_version",
-      type: "string",
-      meta: {
-        required: true,
-        sort: 3,
-        note: "Semantic version of the extension (e.g. 1.0.0)",
-      },
-    },
-    {
-      field: "core_migration",
-      type: "integer",
-      schema: { default_value: "0" },
-      meta: {
-        options: { iconLeft: "database" },
-        sort: 4,
-        note: "Number of the latest applied migration",
-      },
-      collection: "extensions",
-    },
-  ];
-
-  // These will be deleted
-  const oldFields: string[] = [];
-
-  await createOrUpdateDirectusCollection(collection, fields, oldFields);
 }

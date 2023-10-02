@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     collectivoVersion: pkg.version,
     runMigrations: false,
+    apiToken: "",
     directusAdminEmail: "",
     directusAdminPassword: "",
     public: {
