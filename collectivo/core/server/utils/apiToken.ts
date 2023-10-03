@@ -1,5 +1,5 @@
 // Check if there is a valid API token in the request or throw an error
-export function checkApiTokenOrThrowError(event: any) {
+export function verifyCollectivoApiToken(event: any) {
   const headers = getHeaders(event);
   if (!Object.hasOwn(headers, "authorization")) {
     throw createError({

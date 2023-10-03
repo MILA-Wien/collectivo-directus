@@ -1,7 +1,10 @@
+// Run a specific migration for an extension, regardless of current state in db
 export default defineEventHandler((event) => {
-  checkApiTokenOrThrowError(event);
+  // Protect endpoint
+  verifyCollectivoApiToken(event);
+
+  // Read parameters
   const query = getQuery(event);
-  const exts = useExtensionConfigs();
   const extParam = query["ext"];
   const idParam = query["id"];
   if (!extParam) {
@@ -23,8 +26,9 @@ export default defineEventHandler((event) => {
     });
   }
 
+  // Identify extension
+  const exts = getRegisteredExtensions();
   const ext = exts.find((f: any) => f.extensionName === extParam);
-
   if (!ext) {
     throw createError({
       statusCode: 400,
@@ -32,10 +36,11 @@ export default defineEventHandler((event) => {
     });
   }
 
+  // Run migration
   forceMigration(ext, idParam as number);
 
   return {
     detail:
-      "Forcing migration " + String(idParam) + " for extension " + extParam,
+      "Forced migration " + String(idParam) + " for extension " + extParam,
   };
 });

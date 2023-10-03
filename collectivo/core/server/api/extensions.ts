@@ -1,11 +1,11 @@
 // Return list of registered extensions
 export default defineEventHandler((event) => {
-  checkApiTokenOrThrowError(event);
+  verifyCollectivoApiToken(event);
   const registeredExtensions = [];
-  for (const ext of useExtensionConfigs()) {
+  for (const ext of getRegisteredExtensions()) {
     registeredExtensions.push({
-      name: ext.extensionName,
-      version: ext.extensionVersion,
+      name: ext.name,
+      version: ext.version,
       dependencies: ext.dependencies ?? [],
       availableMigrations: ext.migrations?.length ?? 0,
     });
