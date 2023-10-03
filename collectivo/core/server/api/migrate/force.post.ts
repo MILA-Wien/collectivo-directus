@@ -6,7 +6,8 @@ export default defineEventHandler((event) => {
   // Read parameters
   const query = getQuery(event);
   const extParam = query["ext"];
-  const idParam = query["id"];
+  const idParam = Number(query["id"]);
+  const upParam = Boolean(query["up"]);
   if (!extParam) {
     throw createError({
       statusCode: 400,
@@ -16,19 +17,13 @@ export default defineEventHandler((event) => {
   if (!idParam) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Missing parameter 'id'",
-    });
-  }
-  if (typeof idParam !== "number") {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Parameter 'id' must be a number",
+      statusMessage: "Missing or invalid parameter 'id'",
     });
   }
 
   // Identify extension
   const exts = getRegisteredExtensions();
-  const ext = exts.find((f: any) => f.extensionName === extParam);
+  const ext = exts.find((f: any) => f.name === extParam);
   if (!ext) {
     throw createError({
       statusCode: 400,
@@ -37,10 +32,9 @@ export default defineEventHandler((event) => {
   }
 
   // Run migration
-  forceMigration(ext, idParam as number);
+  forceMigration(ext, idParam, upParam);
 
   return {
-    detail:
-      "Forced migration " + String(idParam) + " for extension " + extParam,
+    detail: "Forced migration " + idParam + " for extension " + extParam,
   };
 });

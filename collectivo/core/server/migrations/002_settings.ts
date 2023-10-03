@@ -1,14 +1,25 @@
+import { CollectivoMigration } from "../utils/migrations";
 import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
   createItem,
+  deleteCollection,
 } from "@directus/sdk";
 
-export async function up() {
-  // Create or update extension collection
-  logger.info("Migration TEMPLATE: up called");
+const migration: CollectivoMigration = {
+  up: createSettings,
+  down: deleteSettings,
+};
 
+export default migration;
+
+async function deleteSettings() {
+  const directus = await useDirectus();
+  await directus.request(deleteCollection("core_settings"));
+}
+
+async function createSettings() {
   const collection: NestedPartial<DirectusCollection<any>> = {
     collection: "core_settings",
     schema: {
@@ -85,13 +96,9 @@ export async function up() {
   const oldFields: string[] = [];
 
   await createOrUpdateDirectusCollection(collection, fields, oldFields);
-
-  // const directus = await useDirectus();
-
-  // directus.request(createItem("core_settings", {}));
 }
 
 export async function down() {
-  // Create or update extension collection
-  console.log("Migration 001_test: down called");
+  const directus = await useDirectus();
+  await directus.request(deleteCollection("core_settings"));
 }

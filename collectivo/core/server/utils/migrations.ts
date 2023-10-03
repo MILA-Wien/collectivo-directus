@@ -13,7 +13,7 @@ import {
 } from "@directus/sdk";
 
 import { ExtensionConfig } from "./extensions";
-import { ch } from "@directus/sdk/dist/index-a2b3b0f1";
+import ExtensionCollectionMigration from "./../migrations/001_extensions";
 
 export interface CollectivoMigrationDependency {
   name: string;
@@ -27,8 +27,24 @@ export interface CollectivoMigration {
 }
 
 // Run a specific migration for an extension, regardless of current state in db
-export async function forceMigration(ext: ExtensionConfig, id: number) {
-  logger.info("Force Migration Not Implemented Yet");
+export async function forceMigration(
+  ext: ExtensionConfig,
+  id: number,
+  up?: boolean
+) {
+  if (!ext.migrations) return;
+  if (up == undefined) up = true;
+  const migration = ext.migrations[id - 1];
+  try {
+    if (up) {
+      await migration.up();
+    } else {
+      await migration.down();
+    }
+  } catch (e) {
+    logger.error(`Error running forced migration ${id} ${up} of ${ext.name}`);
+    throw e;
+  }
 }
 
 // Run pending migrations for a set of extensions, based on current state in db
@@ -60,8 +76,15 @@ async function getExtensionsFromDb() {
     return extensions;
   } catch (e) {
     try {
-      // Set up extension collection if it doesn't exist
-      await createOrUpdateExtensionsCollection();
+      // Run initial migration if extensions collection is not found
+      await ExtensionCollectionMigration.up();
+      await directus.request(
+        createItem("core_extensions", {
+          core_name: "core",
+          core_version: "0.0.0",
+          core_migration_state: 1,
+        })
+      );
     } catch (e2) {
       logger.log({
         level: "error",
@@ -116,11 +139,10 @@ async function runMigrations_(
   var migrationState = extensionDb ? extensionDb.core_migration_state : 0;
   const migrationTarget = to || ext.migrations.length;
 
-  console.log(
-    "Running migrations ",
-    ext.name,
-    migrationState,
-    migrationTarget
+  if (migrationState === migrationTarget) return;
+
+  logger.info(
+    `Migrating ${ext.name} from ${migrationState} to ${migrationTarget}`
   );
 
   if (migrationState < migrationTarget) {
@@ -164,11 +186,9 @@ async function runMigrations_(
       }
     }
   }
-}
 
-// ----------------------------------------------------------------------------
-// UTILS ----------------------------------------------------------------------
-// ----------------------------------------------------------------------------
+  logger.info(`Migrations of ${ext.name} successful`);
+}
 
 function checkDependencies(
   migration: CollectivoMigration,
@@ -183,121 +203,4 @@ function checkDependencies(
       );
     }
   }
-}
-
-// Create or update extension collection
-async function createOrUpdateExtensionsCollection() {
-  const collection: NestedPartial<DirectusCollection<any>> = {
-    collection: "core_extensions",
-    schema: {
-      schema: "schema",
-      name: "schema",
-      comment: null,
-    },
-    meta: {
-      icon: "extension",
-      translations: [
-        {
-          language: "en-US",
-          translation: "Extensions",
-          singular: "Extension",
-          plural: "Extensions",
-        },
-        {
-          language: "de-DE",
-          translation: "Erweiterungen",
-          singular: "Erweiterung",
-          plural: "Erweiterungen",
-        },
-      ],
-    },
-  };
-
-  const fields: NestedPartial<DirectusField<any>>[] = [
-    {
-      field: "core_name",
-      type: "string",
-      schema: { is_unique: true, is_nullable: false },
-      meta: {
-        required: true,
-        sort: 2, // 1 is id
-        translations: [
-          { language: "en-US", translation: "Name" },
-          { language: "de-DE", translation: "Name" },
-        ],
-        note: "Name of the extension (should not contain underscores)",
-      },
-    },
-    {
-      field: "core_status",
-      type: "string",
-      meta: {
-        width: "full",
-        sort: 3,
-        options: {
-          choices: [
-            { text: "$t:active", value: "active" },
-            { text: "$t:disabled", value: "disabled" },
-          ],
-        },
-        interface: "select-dropdown",
-        display: "labels",
-        display_options: {
-          showAsDot: true,
-          choices: [
-            {
-              text: "$t:active",
-              value: "active",
-              foreground: "#FFFFFF",
-              background: "var(--primary)",
-            },
-            {
-              text: "$t:disabled",
-              value: "disabled",
-              foreground: "#18222F",
-              background: "#D3DAE4",
-            },
-          ],
-        },
-        translations: [
-          { language: "en-US", translation: "Status" },
-          { language: "de-DE", translation: "Status" },
-        ],
-      },
-      schema: { default_value: "active", is_nullable: false },
-    },
-    {
-      field: "core_version",
-      type: "string",
-      meta: {
-        translations: [
-          { language: "en-US", translation: "Version" },
-          { language: "de-DE", translation: "Version" },
-        ],
-        required: true,
-        sort: 4,
-        note: "Semantic version of the extension (e.g. 1.0.0)",
-      },
-    },
-    {
-      field: "core_migration_state",
-      type: "integer",
-      schema: { default_value: "0" },
-      meta: {
-        translations: [
-          { language: "en-US", translation: "Migration state" },
-          { language: "de-DE", translation: "Migrations status" },
-        ],
-        options: { iconLeft: "database" },
-        sort: 5,
-        note: "The number of applied migrations",
-      },
-      collection: "extensions",
-    },
-  ];
-
-  // These will be deleted
-  const oldFields: string[] = [];
-
-  await createOrUpdateDirectusCollection(collection, fields, oldFields);
 }
