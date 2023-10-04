@@ -27,6 +27,8 @@ async function createOrUpdateExtensionsCollection() {
       comment: null,
     },
     meta: {
+      // @ts-ignore
+      sort: 90,
       icon: "extension",
       translations: [
         {

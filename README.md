@@ -66,3 +66,8 @@ To run unit tests, use:
 ```
 pnpm test
 ```
+
+### Conventions for extensions
+
+- All collections and fields should start with `extensionName_` to avoid name conflicts.
+- Extensions cannot not be named `status`, `sort`, `user`, or `date`.

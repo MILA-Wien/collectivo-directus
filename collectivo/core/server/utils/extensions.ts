@@ -7,6 +7,16 @@ export interface ExtensionConfig {
   migrations?: CollectivoMigration[];
 }
 
+// To avoid name conflicts, the following extension names are forbidden
+const FORBIDDEN_EXTENSION_NAMES = [
+  "directus",
+  "collectivo",
+  "sort",
+  "user",
+  "date",
+  "status",
+];
+
 // Store for registered extension configs
 var registeredExtensions: ExtensionConfig[] = [];
 
@@ -33,6 +43,11 @@ function registerExtension_(ext: ExtensionConfig) {
     throw new Error(
       `Extension name '${ext.name}' should not contain underscores`
     );
+  }
+
+  // Check forbidden names
+  if (FORBIDDEN_EXTENSION_NAMES.includes(ext.name)) {
+    throw new Error(`Extension name '${ext.name}' is forbidden`);
   }
 
   // Check that extension version is a valid semver version

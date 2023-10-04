@@ -6,18 +6,20 @@ export default defineEventHandler((event) => {
   // Read parameters
   const query = getQuery(event);
   const extParam = query["ext"];
-  const toParam = query["to"];
+  var toParam = query["to"];
   if (!extParam) {
     throw createError({
       statusCode: 400,
       statusMessage: "Missing parameter 'ext'",
     });
   }
-  if (toParam && typeof toParam !== "number") {
+  if (toParam && isNaN(Number(toParam))) {
     throw createError({
       statusCode: 400,
       statusMessage: "Parameter 'to' must be a number",
     });
+  } else {
+    toParam = Number(toParam);
   }
 
   // Get extension configs
@@ -38,7 +40,7 @@ export default defineEventHandler((event) => {
   }
 
   // Case 2: Migrate a specific extension
-  const ext = exts.find((f: any) => f.extensionName === extParam);
+  const ext = exts.find((f: any) => f.name === extParam);
   if (!ext) {
     throw createError({
       statusCode: 400,

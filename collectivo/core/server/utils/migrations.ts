@@ -30,19 +30,20 @@ export interface CollectivoMigration {
 export async function forceMigration(
   ext: ExtensionConfig,
   id: number,
-  up?: boolean
+  down?: boolean
 ) {
   if (!ext.migrations) return;
-  if (up == undefined) up = true;
   const migration = ext.migrations[id - 1];
   try {
-    if (up) {
-      await migration.up();
-    } else {
+    if (down) {
       await migration.down();
+    } else {
+      await migration.up();
     }
   } catch (e) {
-    logger.error(`Error running forced migration ${id} ${up} of ${ext.name}`);
+    logger.error(
+      `Error running forced migration ${id} (down=${down}) of ${ext.name}`
+    );
     throw e;
   }
 }
