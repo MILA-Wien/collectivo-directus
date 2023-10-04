@@ -8,13 +8,27 @@
         {{ extension.core_name }} - {{ extension.core_version }}
       </div>
     </div>
+    Current user: {{ currentUser }}
   </div>
-  <div>Translation test: {{ t("welcome") }}</div>
+  <div>
+    Available extensions (from nuxt API):
+    {{ registeredExtensions.registeredExtensions }}
+  </div>
 </template>
 
 <script setup lang="ts">
 const { t } = useI18n();
+const currentUser = useCurrentUser();
 const error = ref(null);
 const extensions = useExtensions();
 if (extensions.value === null) getExtensions().catch((e) => (error.value = e));
+
+// Fetch extensions from nuxt API
+const registeredExtensions = ref<any>(null);
+async function getRegisteredExtensions() {
+  const response = await fetch("/api/extensions");
+  const data = await response.json();
+  registeredExtensions.value = data;
+}
+getRegisteredExtensions();
 </script>

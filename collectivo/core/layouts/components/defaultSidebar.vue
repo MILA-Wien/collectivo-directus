@@ -49,6 +49,7 @@
         </select>
       </form>
     </div>
+    <div>Collectivo V2 v{{ pkg.version }}</div>
   </div>
 </template>
 
@@ -57,6 +58,7 @@ import {
   ArrowRightOnRectangleIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/vue/24/outline";
+import pkg from "../../package.json";
 
 const { t, locale } = useI18n();
 const appConfig = useAppConfig();

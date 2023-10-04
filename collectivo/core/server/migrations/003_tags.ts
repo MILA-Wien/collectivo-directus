@@ -1,9 +1,9 @@
-import { CollectivoMigration } from "../utils/migrations";
 import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
   createItem,
+  createRelation,
   deleteCollection,
 } from "@directus/sdk";
 
@@ -20,24 +20,6 @@ async function deleteTags() {
 }
 
 async function createTags() {
-  const customFields: NestedPartial<DirectusField<any>>[] = [
-    {
-      field: "core_name",
-      type: "string",
-      schema: {
-        is_nullable: false,
-        is_unique: true,
-      },
-      meta: {
-        required: true,
-        translations: [
-          { language: "en-US", translation: "Name" },
-          { language: "de-DE", translation: "Name" },
-        ],
-      },
-    },
-  ];
-
   const collection: NestedPartial<DirectusCollection<any>> = {
     collection: "core_tags",
     schema: {
@@ -47,7 +29,7 @@ async function createTags() {
     },
     //fields: directusDefaultFields, //[...directusDefaultFields, ...customFields],
     meta: {
-      icon: "label",
+      icon: "sell",
       // @ts-ignore
       sort: 20,
       archive_field: "status",
@@ -70,6 +52,24 @@ async function createTags() {
       ],
     },
   };
+
+  const customFields: NestedPartial<DirectusField<any>>[] = [
+    {
+      field: "core_name",
+      type: "string",
+      schema: {
+        is_nullable: false,
+        is_unique: true,
+      },
+      meta: {
+        required: true,
+        translations: [
+          { language: "en-US", translation: "Name" },
+          { language: "de-DE", translation: "Name" },
+        ],
+      },
+    },
+  ];
 
   await createOrUpdateDirectusCollection(
     collection,

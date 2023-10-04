@@ -7,7 +7,7 @@ import {
 export default defineNuxtPlugin((NuxtApp) => {
   const menu = useSidebarMenu();
   const runtimeConfig = useRuntimeConfig();
-  const items = <CollectivoMenuItem[]>[
+  const items = <CoreMenuItem[]>[
     {
       icon: HomeIcon,
       label: "Home",

@@ -3,6 +3,8 @@ import {
   authentication,
   rest,
   AuthenticationClient,
+  readMe,
+  RestClient,
 } from "@directus/sdk";
 
 async function authorizeDirectus(directus: AuthenticationClient<any>) {
@@ -14,6 +16,16 @@ async function authorizeDirectus(directus: AuthenticationClient<any>) {
   return directus;
 }
 
+async function loadCurrentUser(directus: RestClient<CoreSchema>) {
+  const user = useCurrentUser();
+  // @ts-ignore
+  user.value = await directus.request(
+    readMe({
+      fields: ["first_name", "last_name", "email"],
+    })
+  );
+}
+
 export default defineNuxtPlugin({
   name: "directus-client",
   enforce: "pre",
@@ -22,7 +34,7 @@ export default defineNuxtPlugin({
     var directus;
     var isAuthenticated = false;
     try {
-      directus = createDirectus<CollectivoCoreSchema>(
+      directus = createDirectus<CoreSchema>(
         runtimeConfig.public.directusUrl as string
       )
         .with(
@@ -33,6 +45,7 @@ export default defineNuxtPlugin({
         )
         .with(rest({ credentials: "include" }));
       await directus.refresh();
+      loadCurrentUser(directus); // Performed async
       isAuthenticated = true;
     } catch (e) {
       console.log("User is not authenticated");

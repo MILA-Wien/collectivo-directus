@@ -39,7 +39,7 @@ export async function useDirectus() {
 export async function createOrUpdateDirectusCollection(
   collection: NestedPartial<DirectusCollection<any>>,
   fields: NestedPartial<DirectusField<any>>[],
-  oldFields: string[] = []
+  fieldsToRemove?: string[]
 ) {
   if (!collection.collection) {
     throw new Error("Collection name is required");
@@ -62,13 +62,15 @@ export async function createOrUpdateDirectusCollection(
   }
 
   // Remove old fields
-  for (const field of oldFields) {
-    try {
-      await directus.request(deleteField(collection.collection, field));
-      console.log(`Deleted field "${field}"`);
-    } catch (e) {
-      console.error(e);
-      throw new Error("Could not delete field");
+  if (fieldsToRemove) {
+    for (const field of fieldsToRemove) {
+      try {
+        await directus.request(deleteField(collection.collection, field));
+        console.log(`Deleted field "${field}"`);
+      } catch (e) {
+        console.error(e);
+        throw new Error("Could not delete field");
+      }
     }
   }
 
