@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full bg-slate-200 p-4 font-bold">
-    <client-only>{{ t(pageTitle) }}</client-only>
+  <div class="flex items-center h-full font-bold px-4">
+    {{ t(pageTitle) }}
   </div>
 </template>
 

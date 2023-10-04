@@ -16,7 +16,7 @@
       :class="
         getSideBarOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'
       "
-      class="fixed inset-y-0 left-0 z-30 w-60 overflow-y-auto scrollbar-hide transition duration-300 transform bg-white lg:translate-x-0 lg:static lg:inset-0"
+      class="fixed inset-y-0 left-0 z-30 w-60 overflow-y-auto scrollbar-hide transition duration-300 transform bg-white lg:translate-x-0 lg:static lg:inset-0 border-r-2 border-slate-500"
       id="collectivo-sidebar">
       <Sidebar />
     </div>
@@ -24,9 +24,9 @@
     <!-- Main -->
     <div
       id="collectivo-main"
-      class="flex-1 flex flex-col overflow-hidden default-layout bg-slate-300">
+      class="flex-1 flex flex-col overflow-hidden default-layout">
       <!-- Header -->
-      <Header />
+      <div class="w-full h-14 border-b-2 border-slate-500"><Header /></div>
 
       <!-- Content -->
       <main class="flex-1 overflow-x-hidden overflow-y-auto">

@@ -1,10 +1,13 @@
 <template>
+  <div
+    class="flex items-center px-4 font-bold h-14 border-b-2 border-slate-500">
+    {{ appConfig.projectName }}
+  </div>
   <div class="p-4 w-full flex flex-col gap-4">
-    <div class="font-bold">{{ appConfig.projectName }}</div>
     <div v-for="item in sortedMenuItems">
-      <div v-if="true">
+      <div v-if="!item.filter || item.filter(item)">
         <div v-if="item.external">
-          <a :href="getMenuLink(item)" :target="item.target ?? '_blank'">
+          <a :href="item.link" :target="item.target ?? '_blank'">
             <div class="flex flex-row gap-2">
               <component :is="item.icon" class="h-5 w-5" />
               <div>{{ t(item.label) }}</div>
@@ -22,12 +25,23 @@
       </div>
     </div>
     <div v-if="!$isAuthenticated">
-      <a :href="loginPath">Login</a>
+      <a :href="loginPath">
+        <div class="flex flex-row gap-2">
+          <ArrowRightOnRectangleIcon class="h-5 w-5" />
+          <div>{{ t("Login") }}</div>
+        </div>
+      </a>
     </div>
     <div v-else>
-      <a :href="logoutPath">Logout</a>
+      <a :href="logoutPath">
+        <div class="flex flex-row gap-2">
+          <ArrowLeftOnRectangleIcon class="h-5 w-5" />
+          <div>{{ t("Logout") }}</div>
+        </div>
+      </a>
     </div>
     <div>
+      Language:
       <form>
         <select v-model="locale">
           <option value="en">en</option>
@@ -39,6 +53,11 @@
 </template>
 
 <script setup lang="ts">
+import {
+  ArrowRightOnRectangleIcon,
+  ArrowLeftOnRectangleIcon,
+} from "@heroicons/vue/24/outline";
+
 const { t, locale } = useI18n();
 const appConfig = useAppConfig();
 const { $isAuthenticated } = useNuxtApp();
@@ -49,16 +68,8 @@ const loginPath = `${runtimeConfig.public.directusUrl}/auth/login/keycloak?redir
 const logoutPath = `${runtimeConfig.public.keycloakUrl}/realms/collectivo/protocol/openid-connect/logout`;
 
 // Prepare menu items
-const menuItems = appConfig.mainMenuItems;
-const sortedMenuItems = Object.values(menuItems).sort(
+const menuItems = useSidebarMenu();
+const sortedMenuItems = Object.values(menuItems.value).sort(
   (a, b) => (a.order ?? 100) - (b.order ?? 100)
 );
-
-// Access runtime config vars to generate menu links based on .env
-function getMenuLink(item: any): string {
-  if (item.linkFromRuntimeVar) {
-    return runtimeConfig.public[item.linkFromRuntimeVar] as string;
-  }
-  return item.link;
-}
 </script>

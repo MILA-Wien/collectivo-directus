@@ -1,3 +1,3 @@
 export default defineAppConfig({
-  projectName: "My Project",
+  projectName: "Collectivo V2 Demo",
 });
