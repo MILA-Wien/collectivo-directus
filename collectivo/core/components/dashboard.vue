@@ -9,6 +9,7 @@
       </div>
     </div>
   </div>
+  <div>Translation test: {{ t("welcome") }}</div>
 </template>
 
 <script setup lang="ts">

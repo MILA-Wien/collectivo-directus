@@ -3,4 +3,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
   extends: ["@collectivo/core", "@collectivo/members"],
+  i18n: {
+    langDir: "./lang",
+    locales: [
+      { code: "en", file: "en.json" },
+      { code: "de", file: "de.json" },
+    ],
+  },
 });
