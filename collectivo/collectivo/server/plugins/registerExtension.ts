@@ -7,7 +7,7 @@ import m4 from "../migrations/004_tiles";
 // Register extension on startup
 export default defineNitroPlugin((nitroApp) => {
   registerExtension({
-    name: "core",
+    name: "collectivo",
     version: pkg.version,
     migrations: [m1, m2, m3, m4],
   });

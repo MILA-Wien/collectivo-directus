@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@collectivo/core": "workspace:*"
+    "@collectivo/collectivo": "workspace:*"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

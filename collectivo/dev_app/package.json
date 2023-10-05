@@ -9,7 +9,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@collectivo/core": "workspace:*",
+    "@collectivo/collectivo": "workspace:*",
     "@collectivo/members": "workspace:*"
   },
   "devDependencies": {

@@ -1,4 +1,37 @@
-export const directusStatusField = {
+export const NAME_FIELD = {
+  field: "name",
+  type: "string",
+  schema: {
+    is_nullable: false,
+    is_unique: true,
+  },
+  meta: {
+    required: true,
+    translations: [
+      { language: "en-US", translation: "Name" },
+      { language: "de-DE", translation: "Name" },
+    ],
+  },
+};
+
+export const DESCRIPTION_FIELD = {
+  field: "description",
+  type: "text",
+  schema: {},
+  meta: { interface: "input-multiline", special: null },
+};
+
+export const NOTES_FIELD = {
+  field: "notes",
+  type: "text",
+  schema: {},
+  meta: {
+    interface: "input-rich-text-md",
+  },
+  collection: "members_memberships",
+};
+
+export const STATUS_FIELD = {
   field: "status",
   type: "string",
   meta: {
@@ -10,6 +43,7 @@ export const directusStatusField = {
         { text: "$t:archived", value: "archived" },
       ],
     },
+    sort: 10,
     interface: "select-dropdown",
     display: "labels",
     display_options: {
@@ -39,11 +73,12 @@ export const directusStatusField = {
   schema: { default_value: "draft", is_nullable: false },
 };
 
-export const directusStatusFieldWithoutDraft = {
+export const STATUS_FIELD_NO_DRAFT = {
   field: "status",
   type: "string",
   meta: {
     width: "full",
+    sort: 10,
     options: {
       choices: [
         { text: "$t:published", value: "published" },
@@ -75,14 +110,14 @@ export const directusStatusFieldWithoutDraft = {
 
 // System fields
 
-export const directusSortField = {
+export const SORT_FIELD = {
   field: "sort",
   type: "integer",
-  meta: { interface: "input", hidden: true },
+  meta: { interface: "input", hidden: true, sort: 105 },
   schema: {},
 };
 
-export const directusUserCreatedField = {
+export const USER_CREATED_FIELD = {
   field: "user_created",
   type: "uuid",
   meta: {
@@ -95,11 +130,12 @@ export const directusUserCreatedField = {
     readonly: true,
     hidden: true,
     width: "half",
+    sort: 101,
   },
   schema: {},
 };
 
-export const directusDateCreatedField = {
+export const DATE_CREATED_FIELD = {
   field: "date_created",
   type: "timestamp",
   meta: {
@@ -110,11 +146,12 @@ export const directusDateCreatedField = {
     width: "half",
     display: "datetime",
     display_options: { relative: true },
+    sort: 102,
   },
   schema: {},
 };
 
-export const directusUserUpdatedField = {
+export const USER_UPDATED_FIELD = {
   field: "user_updated",
   type: "uuid",
   meta: {
@@ -127,11 +164,12 @@ export const directusUserUpdatedField = {
     readonly: true,
     hidden: true,
     width: "half",
+    sort: 103,
   },
   schema: {},
 };
 
-export const directusDateUpdatedField = {
+export const DATE_UPDATED_FIELD = {
   field: "date_updated",
   type: "timestamp",
   meta: {
@@ -142,14 +180,14 @@ export const directusDateUpdatedField = {
     width: "half",
     display: "datetime",
     display_options: { relative: true },
+    sort: 104,
   },
   schema: {},
 };
 
-export const directusDefaultFields = [
-  directusSortField,
-  directusUserCreatedField,
-  directusDateCreatedField,
-  directusUserUpdatedField,
-  directusDateUpdatedField,
+export const DIRECTUS_SYSTEM_FIELDS = [
+  USER_CREATED_FIELD,
+  USER_UPDATED_FIELD,
+  DATE_CREATED_FIELD,
+  DATE_UPDATED_FIELD,
 ];

@@ -12,7 +12,7 @@
   </div>
   <div>
     Available extensions (from nuxt API):
-    {{ registeredExtensions.registeredExtensions }}
+    {{ registeredExtensions?.registeredExtensions }}
   </div>
 </template>
 

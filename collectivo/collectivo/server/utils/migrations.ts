@@ -16,11 +16,14 @@ import { ExtensionConfig } from "./extensions";
 import ExtensionCollectionMigration from "./../migrations/001_extensions";
 
 export interface CollectivoMigrationDependency {
-  name: string;
-  id: number;
+  extensionName: string;
+  migrationId: number;
 }
 
 export interface CollectivoMigration {
+  id: number;
+  name: string;
+  description?: string;
   up: () => Promise<void>;
   down: () => Promise<void>;
   dependencies?: CollectivoMigrationDependency[];
@@ -70,7 +73,7 @@ async function getExtensionsFromDb() {
   var extensions: any = null;
 
   try {
-    extensions = await directus.request(readItems("core_extensions"));
+    extensions = await directus.request(readItems("collectivo_extensions"));
     if (extensions.length === 0) {
       return undefined;
     }
@@ -80,10 +83,10 @@ async function getExtensionsFromDb() {
       // Run initial migration if extensions collection is not found
       await ExtensionCollectionMigration.up();
       await directus.request(
-        createItem("core_extensions", {
-          core_name: "core",
-          core_version: "0.0.0",
-          core_migration_state: 1,
+        createItem("collectivo_extensions", {
+          name: "collectivo",
+          version: "0.0.0",
+          migration_state: 1,
         })
       );
     } catch (e2) {
@@ -99,7 +102,11 @@ async function getExtensionsFromDb() {
       });
       throw new Error("Error reading or creating extensions collection");
     }
-    return [];
+    extensions = await directus.request(readItems("collectivo_extensions"));
+    if (extensions.length === 0) {
+      return undefined;
+    }
+    return extensions;
   }
 }
 
@@ -111,34 +118,34 @@ async function runMigrations_(
   const directus = await useDirectus();
 
   // Get data of current extension
-  var extensionDb = extsDb.find((f) => f.core_name === ext.name);
+  var extensionDb = extsDb.find((f) => f.name === ext.name);
 
   // Register extension if not found
   if (!extensionDb) {
     try {
       extensionDb = await directus.request(
-        createItem("core_extensions", {
-          core_name: ext.name,
-          core_version: ext.version,
-          core_migration_state: 0,
+        createItem("collectivo_extensions", {
+          name: ext.name,
+          version: ext.version,
+          migration_state: 0,
         })
       );
     } catch (e) {
       logger.error(e);
       throw new Error(`Error creating extension ${ext.name}`);
     }
-  } else if (extensionDb.core_version !== ext.version) {
+  } else if (extensionDb.version !== ext.version) {
     await directus.request(
-      updateItem("core_extensions", extensionDb.id, {
-        core_version: ext.version,
+      updateItem("collectivo_extensions", extensionDb.id, {
+        version: ext.version,
       })
     );
   }
 
   // Run migration difference
   if (!ext.migrations) return;
-  var migrationState = extensionDb ? extensionDb.core_migration_state : 0;
-  const migrationTarget = to || ext.migrations.length;
+  var migrationState = extensionDb ? extensionDb.migration_state : 0;
+  const migrationTarget = to != undefined ? to : ext.migrations.length;
 
   if (migrationState === migrationTarget) return;
 
@@ -156,8 +163,8 @@ async function runMigrations_(
         await migration.up();
         migrationState++;
         await directus.request(
-          updateItem("core_extensions", extensionDb.id, {
-            core_migration_state: migrationState,
+          updateItem("collectivo_extensions", extensionDb.id, {
+            migration_state: migrationState,
           })
         );
       } catch (e) {
@@ -175,8 +182,8 @@ async function runMigrations_(
         await migration.down();
         migrationState--;
         await directus.request(
-          updateItem("core_extensions", extensionDb.id, {
-            core_migration_state: migrationState,
+          updateItem("collectivo_extensions", extensionDb.id, {
+            migration_state: migrationState,
           })
         );
       } catch (e) {
@@ -197,10 +204,10 @@ function checkDependencies(
 ): void {
   if (!migration.dependencies) return;
   for (const dep of migration.dependencies) {
-    const depDb = extsDb.find((f) => f.core_name === dep.name);
-    if (!depDb || depDb.core_migration_state < dep.id) {
+    const depDb = extsDb.find((f) => f.name === dep.extensionName);
+    if (!depDb || depDb.migration_state < dep.migrationId) {
       throw new Error(
-        `Dependency not met: ${dep.name} must be at migration ${dep.id}`
+        `Dependency not met: ${dep.extensionName} must be at migration ${dep.migrationId}`
       );
     }
   }

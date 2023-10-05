@@ -1,13 +1,13 @@
-import { CollectivoMigration } from "../utils/migrations";
 import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
-  createItem,
   deleteCollection,
 } from "@directus/sdk";
 
-const migration: CollectivoMigration = {
+const migration = {
+  id: 4,
+  name: "004_tiles",
   up: createTiles,
   down: deleteTiles,
 };
@@ -16,12 +16,12 @@ export default migration;
 
 async function deleteTiles() {
   const directus = await useDirectus();
-  await directus.request(deleteCollection("core_tiles"));
+  await directus.request(deleteCollection("collectivo_tiles"));
 }
 
 async function createTiles() {
   const collection: NestedPartial<DirectusCollection<any>> = {
-    collection: "core_tiles",
+    collection: "collectivo_tiles",
     schema: {
       schema: "schema",
       name: "schema",
@@ -52,9 +52,12 @@ async function createTiles() {
     },
   };
 
-  const customFields: NestedPartial<DirectusField<any>>[] = [
+  const fields: NestedPartial<DirectusField<any>>[] = [
+    SORT_FIELD,
+    STATUS_FIELD,
+    ...DIRECTUS_SYSTEM_FIELDS,
     {
-      field: "core_name",
+      field: "collectivo_name",
       type: "string",
 
       schema: {
@@ -71,7 +74,7 @@ async function createTiles() {
       },
     },
     {
-      field: "core_content",
+      field: "collectivo_content",
       type: "text",
       schema: {},
       meta: {
@@ -100,18 +103,5 @@ async function createTiles() {
     },
   ];
 
-  await createOrUpdateDirectusCollection(
-    collection,
-    [directusStatusField, ...directusDefaultFields, ...customFields],
-    []
-  );
-
-  // const directus = await useDirectus();
-
-  // directus.request(createItem("core_settings", {}));
-}
-
-export async function down() {
-  // Create or update extension collection
-  console.log("Migration 001_test: down called");
+  await createOrUpdateDirectusCollection(collection, fields);
 }

@@ -13,6 +13,9 @@ import {
   updateCollection,
   updateField,
   deleteField,
+  DirectusRelation,
+  createRelation,
+  updateRelation,
 } from "@directus/sdk";
 
 // Shared server variable
@@ -36,10 +39,23 @@ export async function useDirectus() {
   return directus;
 }
 
+// // Remove old fields
+// if (fieldsToRemove) {
+//   for (const field of fieldsToRemove) {
+//     try {
+//       await directus.request(deleteField(collection.collection, field));
+//       console.log(`Deleted field "${field}"`);
+//     } catch (e) {
+//       console.error(e);
+//       throw new Error("Could not delete field");
+//     }
+//   }
+// }
+
 export async function createOrUpdateDirectusCollection(
   collection: NestedPartial<DirectusCollection<any>>,
-  fields: NestedPartial<DirectusField<any>>[],
-  fieldsToRemove?: string[]
+  fields?: NestedPartial<DirectusField<any>>[],
+  relations?: NestedPartial<DirectusRelation<any>>[]
 ) {
   if (!collection.collection) {
     throw new Error("Collection name is required");
@@ -61,21 +77,12 @@ export async function createOrUpdateDirectusCollection(
     }
   }
 
-  // Remove old fields
-  if (fieldsToRemove) {
-    for (const field of fieldsToRemove) {
-      try {
-        await directus.request(deleteField(collection.collection, field));
-        console.log(`Deleted field "${field}"`);
-      } catch (e) {
-        console.error(e);
-        throw new Error("Could not delete field");
-      }
-    }
+  for (const field of fields ?? []) {
+    await createOrUpdateDirectusField(collection.collection, field);
   }
 
-  for (const field of fields) {
-    await createOrUpdateDirectusField(collection.collection, field);
+  for (const relation of relations ?? []) {
+    await createOrUpdateDirectusRelation(collection.collection, relation);
   }
 }
 
@@ -98,6 +105,31 @@ export async function createOrUpdateDirectusField(
       console.error(e);
       console.error(e2);
       throw new Error("Could not create or update field");
+    }
+  }
+}
+
+export async function createOrUpdateDirectusRelation(
+  collectionName: string,
+  relation: NestedPartial<DirectusRelation<any>>
+) {
+  if (!relation.field) {
+    throw new Error("Relation name is required");
+  }
+  const directus = await useDirectus();
+  try {
+    await directus.request(createRelation(relation));
+    console.log(`Created relation "${relation.field}"`);
+  } catch (e) {
+    try {
+      await directus.request(
+        updateRelation(collectionName, relation.field, relation)
+      );
+      console.log(`Updated relation "${relation.field}"`);
+    } catch (e2) {
+      console.error(e);
+      console.error(e2);
+      throw new Error("Could not create or update relation");
     }
   }
 }

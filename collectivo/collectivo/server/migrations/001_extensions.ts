@@ -1,5 +1,6 @@
 import { CollectivoMigration } from "../utils/migrations";
 import {
+  createFolder,
   deleteCollection,
   DirectusCollection,
   DirectusField,
@@ -7,20 +8,23 @@ import {
 } from "@directus/sdk";
 
 const migration: CollectivoMigration = {
-  up: createOrUpdateExtensionsCollection,
-  down: deleteExtensionsCollection,
+  id: 1,
+  name: "001_extensions",
+  up: createExtensions,
+  down: deleteExtensions,
 };
 
 export default migration;
 
-async function deleteExtensionsCollection() {
+async function deleteExtensions() {
   const directus = await useDirectus();
-  await directus.request(deleteCollection("core_extensions"));
+  await directus.request(deleteCollection("collectivo_extensions"));
 }
 
-async function createOrUpdateExtensionsCollection() {
+async function createExtensions() {
+  // Extensions ---------------------------------------------------------------
   const collection: NestedPartial<DirectusCollection<any>> = {
-    collection: "core_extensions",
+    collection: "collectivo_extensions",
     schema: {
       schema: "schema",
       name: "schema",
@@ -49,7 +53,7 @@ async function createOrUpdateExtensionsCollection() {
 
   const fields: NestedPartial<DirectusField<any>>[] = [
     {
-      field: "core_name",
+      field: "name",
       type: "string",
       schema: { is_unique: true, is_nullable: false },
       meta: {
@@ -63,7 +67,7 @@ async function createOrUpdateExtensionsCollection() {
       },
     },
     {
-      field: "core_status",
+      field: "status",
       type: "string",
       meta: {
         width: "full",
@@ -101,7 +105,7 @@ async function createOrUpdateExtensionsCollection() {
       schema: { default_value: "active", is_nullable: false },
     },
     {
-      field: "core_version",
+      field: "version",
       type: "string",
       meta: {
         translations: [
@@ -114,7 +118,7 @@ async function createOrUpdateExtensionsCollection() {
       },
     },
     {
-      field: "core_migration_state",
+      field: "migration_state",
       type: "integer",
       schema: { default_value: "0" },
       meta: {
@@ -130,8 +134,5 @@ async function createOrUpdateExtensionsCollection() {
     },
   ];
 
-  // These will be deleted
-  const oldFields: string[] = [];
-
-  await createOrUpdateDirectusCollection(collection, fields, oldFields);
+  await createOrUpdateDirectusCollection(collection, fields);
 }

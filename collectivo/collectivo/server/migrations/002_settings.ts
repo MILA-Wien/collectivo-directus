@@ -8,6 +8,8 @@ import {
 } from "@directus/sdk";
 
 const migration: CollectivoMigration = {
+  id: 2,
+  name: "002_settings",
   up: createSettings,
   down: deleteSettings,
 };
@@ -16,12 +18,38 @@ export default migration;
 
 async function deleteSettings() {
   const directus = await useDirectus();
-  await directus.request(deleteCollection("core_settings"));
+  await directus.request(deleteCollection("collectivo_settings"));
 }
 
 async function createSettings() {
+  // Create Settings folder
+  const folder: NestedPartial<DirectusCollection<any>> = {
+    collection: "collectivo_settings_folder",
+    meta: {
+      icon: "settings",
+      // @ts-ignore
+      sort: 100,
+      translations: [
+        {
+          language: "en-US",
+          translation: "Settings",
+          singular: "Settings",
+          plural: "Settings",
+        },
+        {
+          language: "de-DE",
+          translation: "Einstellungen",
+          singular: "Einstellungen",
+          plural: "Einstellungen",
+        },
+      ],
+    },
+  };
+
+  await createOrUpdateDirectusCollection(folder);
+
   const collection: NestedPartial<DirectusCollection<any>> = {
-    collection: "core_settings",
+    collection: "collectivo_settings",
     schema: {
       schema: "schema",
       name: "schema",
@@ -31,6 +59,7 @@ async function createSettings() {
       icon: "settings",
       // @ts-ignore
       sort: 100,
+      group: "collectivo_settings_folder",
       singleton: true,
       translations: [
         {
@@ -51,7 +80,7 @@ async function createSettings() {
 
   const fields: NestedPartial<DirectusField<any>>[] = [
     {
-      field: "core_project_name",
+      field: "collectivo_project_name",
       type: "string",
       meta: {
         sort: 2,
@@ -66,7 +95,7 @@ async function createSettings() {
       },
     },
     {
-      field: "core_project_description",
+      field: "collectivo_project_description",
       type: "string",
       meta: {
         sort: 3,
@@ -78,7 +107,7 @@ async function createSettings() {
       },
     },
     {
-      field: "core_editor_role",
+      field: "collectivo_editor_role",
       type: "string",
       meta: {
         hidden: true,
@@ -95,10 +124,10 @@ async function createSettings() {
   // These will be deleted
   const oldFields: string[] = [];
 
-  await createOrUpdateDirectusCollection(collection, fields, oldFields);
+  await createOrUpdateDirectusCollection(collection, fields);
 }
 
 export async function down() {
   const directus = await useDirectus();
-  await directus.request(deleteCollection("core_settings"));
+  await directus.request(deleteCollection("collectivo_settings"));
 }

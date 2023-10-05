@@ -10,10 +10,13 @@ export interface ExtensionConfig {
 // To avoid name conflicts, the following extension names are forbidden
 const FORBIDDEN_EXTENSION_NAMES = [
   "directus",
-  "collectivo",
   "sort",
   "user",
   "date",
+  "name",
+  "notes",
+  "migration",
+  "description",
   "status",
 ];
 

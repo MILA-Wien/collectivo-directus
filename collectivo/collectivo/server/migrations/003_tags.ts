@@ -2,12 +2,12 @@ import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
-  createItem,
-  createRelation,
   deleteCollection,
 } from "@directus/sdk";
 
-const migration: CollectivoMigration = {
+const migration = {
+  id: 3,
+  name: "003_tags",
   up: createTags,
   down: deleteTags,
 };
@@ -16,25 +16,23 @@ export default migration;
 
 async function deleteTags() {
   const directus = await useDirectus();
-  await directus.request(deleteCollection("core_tags"));
+  await directus.request(deleteCollection("collectivo_tags"));
 }
 
 async function createTags() {
   const collection: NestedPartial<DirectusCollection<any>> = {
-    collection: "core_tags",
+    collection: "collectivo_tags",
     schema: {
       schema: "schema",
       name: "schema",
       comment: null,
     },
-    //fields: directusDefaultFields, //[...directusDefaultFields, ...customFields],
     meta: {
       icon: "sell",
       // @ts-ignore
       sort: 20,
       archive_field: "status",
       archive_value: "archived",
-      sort_field: "sort",
       unarchive_value: "published",
       translations: [
         {
@@ -53,9 +51,11 @@ async function createTags() {
     },
   };
 
-  const customFields: NestedPartial<DirectusField<any>>[] = [
+  const fields: NestedPartial<DirectusField<any>>[] = [
+    STATUS_FIELD_NO_DRAFT,
+    ...DIRECTUS_SYSTEM_FIELDS,
     {
-      field: "core_name",
+      field: "collectivo_name",
       type: "string",
       schema: {
         is_nullable: false,
@@ -71,22 +71,5 @@ async function createTags() {
     },
   ];
 
-  await createOrUpdateDirectusCollection(
-    collection,
-    [
-      directusStatusFieldWithoutDraft,
-      ...directusDefaultFields,
-      ...customFields,
-    ],
-    []
-  );
-
-  // const directus = await useDirectus();
-
-  // directus.request(createItem("core_settings", {}));
-}
-
-export async function down() {
-  // Create or update extension collection
-  console.log("Migration 001_test: down called");
+  await createOrUpdateDirectusCollection(collection, fields);
 }

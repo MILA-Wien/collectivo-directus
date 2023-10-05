@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  extends: ["@collectivo/core"],
+  extends: ["@collectivo/collectivo"],
   i18n: {
     langDir: "./lang",
     locales: [

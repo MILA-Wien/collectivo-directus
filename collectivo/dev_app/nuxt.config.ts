@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
-  extends: ["@collectivo/core", "@collectivo/members"],
+  extends: ["@collectivo/collectivo", "@collectivo/members"],
   i18n: {
     langDir: "./lang",
     locales: [
