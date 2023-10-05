@@ -117,6 +117,7 @@ async function createMembers() {
       meta: {
         interface: "select-dropdown-m2o",
         special: ["m2o"],
+        width: "half",
         sort: 1,
         required: true,
         options: {
@@ -137,7 +138,8 @@ async function createMembers() {
       meta: {
         interface: "select-dropdown-m2o",
         special: ["m2o"],
-        sort: 1,
+        width: "half",
+        sort: 2,
         required: true,
         options: {
           template: "{{name}}",
@@ -157,8 +159,8 @@ async function createMembers() {
       field: "members_subtype",
       type: "string",
       meta: {
-        width: "full",
-        sort: 10,
+        width: "half",
+        sort: 3,
         options: {
           choices: [],
         },
@@ -175,8 +177,8 @@ async function createMembers() {
       field: "status",
       type: "string",
       meta: {
-        width: "full",
-        sort: 10,
+        width: "half",
+        sort: 4,
         options: {
           choices: [
             { text: "$t:draft", value: "draft" },
@@ -197,6 +199,7 @@ async function createMembers() {
       schema: {},
       meta: {
         interface: "datetime",
+        width: "half",
         translations: [
           { language: "de-DE", translation: "Datum Beworben" },
           { language: "en-US", translation: "Date Applied" },
@@ -209,6 +212,7 @@ async function createMembers() {
       schema: {},
       meta: {
         interface: "datetime",
+        width: "half",
         translations: [
           { language: "de-DE", translation: "Datum Angenommen" },
           { language: "en-US", translation: "Date Approved" },
@@ -221,6 +225,7 @@ async function createMembers() {
       schema: {},
       meta: {
         interface: "datetime",
+        width: "half",
         translations: [
           { language: "de-DE", translation: "Datum Austieg" },
           { language: "en-US", translation: "Date Cancelled" },
@@ -233,6 +238,7 @@ async function createMembers() {
       schema: {},
       meta: {
         interface: "datetime",
+        width: "half",
         translations: [
           { language: "de-DE", translation: "Datum Beendet" },
           { language: "en-US", translation: "Date Ended" },
