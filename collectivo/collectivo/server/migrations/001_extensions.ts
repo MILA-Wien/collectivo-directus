@@ -22,7 +22,35 @@ async function deleteExtensions() {
 }
 
 async function createExtensions() {
+  // Settings folder ----------------------------------------------------------
+
+  const folder: NestedPartial<DirectusCollection<any>> = {
+    collection: "collectivo_settings_folder",
+    meta: {
+      icon: "settings",
+      // @ts-ignore
+      sort: 100,
+      translations: [
+        {
+          language: "en-US",
+          translation: "Settings",
+          singular: "Settings",
+          plural: "Settings",
+        },
+        {
+          language: "de-DE",
+          translation: "Einstellungen",
+          singular: "Einstellungen",
+          plural: "Einstellungen",
+        },
+      ],
+    },
+  };
+
+  await createOrUpdateDirectusCollection(folder);
+
   // Extensions ---------------------------------------------------------------
+
   const collection: NestedPartial<DirectusCollection<any>> = {
     collection: "collectivo_extensions",
     schema: {
@@ -33,6 +61,7 @@ async function createExtensions() {
     meta: {
       // @ts-ignore
       sort: 90,
+      group: "collectivo_settings_folder",
       icon: "extension",
       translations: [
         {

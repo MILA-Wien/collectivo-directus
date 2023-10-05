@@ -15,6 +15,7 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "date",
   "name",
   "notes",
+  "version",
   "migration",
   "description",
   "status",

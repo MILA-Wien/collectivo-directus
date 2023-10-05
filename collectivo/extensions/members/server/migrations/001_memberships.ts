@@ -140,12 +140,12 @@ async function createMembers() {
         sort: 1,
         required: true,
         options: {
-          template: "{{members_name}}",
+          template: "{{name}}",
           enableCreate: false,
         },
         display: "related-values",
         display_options: {
-          template: "{{members_name}}",
+          template: "{{name}}",
         },
         translations: [
           { language: "en-US", translation: "Type" },
@@ -169,7 +169,7 @@ async function createMembers() {
           { language: "de-DE", translation: "Unterart" },
         ],
       },
-      schema: { default_value: "draft", is_nullable: false },
+      schema: { is_nullable: true },
     },
     {
       field: "status",

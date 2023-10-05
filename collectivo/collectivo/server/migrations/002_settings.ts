@@ -22,32 +22,6 @@ async function deleteSettings() {
 }
 
 async function createSettings() {
-  // Create Settings folder
-  const folder: NestedPartial<DirectusCollection<any>> = {
-    collection: "collectivo_settings_folder",
-    meta: {
-      icon: "settings",
-      // @ts-ignore
-      sort: 100,
-      translations: [
-        {
-          language: "en-US",
-          translation: "Settings",
-          singular: "Settings",
-          plural: "Settings",
-        },
-        {
-          language: "de-DE",
-          translation: "Einstellungen",
-          singular: "Einstellungen",
-          plural: "Einstellungen",
-        },
-      ],
-    },
-  };
-
-  await createOrUpdateDirectusCollection(folder);
-
   const collection: NestedPartial<DirectusCollection<any>> = {
     collection: "collectivo_settings",
     schema: {
@@ -58,21 +32,21 @@ async function createSettings() {
     meta: {
       icon: "settings",
       // @ts-ignore
-      sort: 100,
+      sort: 1,
       group: "collectivo_settings_folder",
       singleton: true,
       translations: [
         {
           language: "en-US",
-          translation: "Settings",
-          singular: "Settings",
-          plural: "Settings",
+          translation: "Project",
+          singular: "Project",
+          plural: "Project",
         },
         {
           language: "de-DE",
-          translation: "Einstellungen",
-          singular: "Einstellungen",
-          plural: "Einstellungen",
+          translation: "Projekt",
+          singular: "Projekte",
+          plural: "Projekt",
         },
       ],
     },
