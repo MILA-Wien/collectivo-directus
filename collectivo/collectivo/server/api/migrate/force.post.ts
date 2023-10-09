@@ -1,24 +1,6 @@
-function convertBoolean(value: any, defaultValue?: boolean) {
-  if (value === "true" || value === true) {
-    return true;
-  }
-  if (value === "false" || value === false) {
-    return false;
-  }
-  if (
-    !defaultValue &&
-    (value === "" || value === undefined || value === null)
-  ) {
-    return defaultValue;
-  }
-  throw createError({
-    statusCode: 400,
-    statusMessage: "Invalid parameter value '" + value + "'",
-  });
-}
-
 // Run a specific migration for an extension, regardless of current state in db
 export default defineEventHandler((event) => {
+  console.log("Forcing migration");
   // Protect endpoint
   verifyCollectivoApiToken(event);
 

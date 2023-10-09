@@ -35,12 +35,15 @@ export async function forceMigration(
   id: number,
   down?: boolean
 ) {
+  const direction = down ? "down" : "up";
+  logger.info(`Forced migration ${id} (${direction}) of ${ext.name} starting`);
   if (!ext.migrations) return;
   const migration = ext.migrations[id - 1];
   try {
     if (down) {
       await migration.down();
     } else {
+      console.log("running up");
       await migration.up();
     }
   } catch (e) {
@@ -49,13 +52,26 @@ export async function forceMigration(
     );
     throw e;
   }
+  logger.info(
+    `Forced migration ${id} (${direction}) of ${ext.name} successful`
+  );
 }
 
 // Run pending migrations for a set of extensions, based on current state in db
-export async function runAllMigrations(exts: ExtensionConfig[]) {
+export async function runAllMigrations(
+  exts: ExtensionConfig[],
+  createDemoData: boolean = false
+) {
   const extsDb = await getExtensionsFromDb();
   for (const ext of exts) {
     await runMigrations_(ext, extsDb);
+  }
+  if (createDemoData) {
+    for (const ext of exts) {
+      if (ext.demoData) {
+        await ext.demoData();
+      }
+    }
   }
 }
 

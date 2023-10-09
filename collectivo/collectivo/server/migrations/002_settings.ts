@@ -32,21 +32,20 @@ async function createSettings() {
     meta: {
       icon: "settings",
       // @ts-ignore
-      sort: 1,
-      group: "collectivo_settings_folder",
+      sort: 1000,
       singleton: true,
       translations: [
         {
           language: "en-US",
-          translation: "Project",
-          singular: "Project",
-          plural: "Project",
+          translation: "Settings",
+          singular: "Settings",
+          plural: "Settings",
         },
         {
           language: "de-DE",
-          translation: "Projekt",
-          singular: "Projekte",
-          plural: "Projekt",
+          translation: "Einstellungen",
+          singular: "Einstellungen",
+          plural: "Einstellungen",
         },
       ],
     },
@@ -99,6 +98,16 @@ async function createSettings() {
   const oldFields: string[] = [];
 
   await createOrUpdateDirectusCollection(collection, fields);
+
+  // Add extensions to settnigs
+  const extensions: NestedPartial<DirectusCollection<any>> = {
+    collection: "collectivo_extensions",
+    meta: {
+      group: "collectivo_settings",
+    },
+  };
+
+  await updateDirectusCollection(extensions);
 }
 
 export async function down() {

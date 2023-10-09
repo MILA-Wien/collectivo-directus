@@ -86,6 +86,35 @@ export async function createOrUpdateDirectusCollection(
   }
 }
 
+export async function updateDirectusCollection(
+  collection: NestedPartial<DirectusCollection<any>>,
+  fields?: NestedPartial<DirectusField<any>>[],
+  relations?: NestedPartial<DirectusRelation<any>>[]
+) {
+  if (!collection.collection) {
+    throw new Error("Collection name is required");
+  }
+  const directus = await useDirectus();
+
+  try {
+    await directus.request(
+      updateCollection(collection.collection, collection)
+    );
+    console.log(`Updated collection "${collection.collection}"`);
+  } catch (e2) {
+    console.error(e2);
+    throw new Error("Could not create or update collection");
+  }
+
+  for (const field of fields ?? []) {
+    await createOrUpdateDirectusField(collection.collection, field);
+  }
+
+  for (const relation of relations ?? []) {
+    await createOrUpdateDirectusRelation(collection.collection, relation);
+  }
+}
+
 export async function createOrUpdateDirectusField(
   collectionName: string,
   field: NestedPartial<DirectusField<any>>

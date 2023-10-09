@@ -1,3 +1,9 @@
+export const EMPTY_SCHEMA = {
+  schema: "schema",
+  name: "schema",
+  comment: null,
+};
+
 export const NAME_FIELD = {
   field: "name",
   type: "string",
@@ -6,6 +12,7 @@ export const NAME_FIELD = {
     is_unique: true,
   },
   meta: {
+    sort: 1,
     required: true,
     translations: [
       { language: "en-US", translation: "Name" },
@@ -18,7 +25,7 @@ export const DESCRIPTION_FIELD = {
   field: "description",
   type: "text",
   schema: {},
-  meta: { interface: "input-multiline", special: null },
+  meta: { interface: "input-multiline" },
 };
 
 export const NOTES_FIELD = {
@@ -30,6 +37,8 @@ export const NOTES_FIELD = {
   },
   collection: "members_memberships",
 };
+
+// Default status fields (10)
 
 export const STATUS_FIELD = {
   field: "status",
@@ -108,14 +117,7 @@ export const STATUS_FIELD_NO_DRAFT = {
   schema: { default_value: "published", is_nullable: false },
 };
 
-// System fields
-
-export const SORT_FIELD = {
-  field: "sort",
-  type: "integer",
-  meta: { interface: "input", hidden: true, sort: 105 },
-  schema: {},
-};
+// System fields (101-105)
 
 export const USER_CREATED_FIELD = {
   field: "user_created",
@@ -191,3 +193,10 @@ export const DIRECTUS_SYSTEM_FIELDS = [
   DATE_CREATED_FIELD,
   DATE_UPDATED_FIELD,
 ];
+
+export const SORT_FIELD = {
+  field: "sort",
+  type: "integer",
+  meta: { interface: "input", hidden: true, sort: 105 },
+  schema: {},
+};

@@ -5,6 +5,7 @@ export interface ExtensionConfig {
   name: string;
   version: string;
   migrations?: CollectivoMigration[];
+  demoData?: () => Promise<void>;
 }
 
 // To avoid name conflicts, the following extension names are forbidden
@@ -13,6 +14,7 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "sort",
   "user",
   "date",
+  "email",
   "name",
   "notes",
   "version",

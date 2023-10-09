@@ -7,6 +7,7 @@ export default defineEventHandler((event) => {
   const query = getQuery(event);
   const extParam = query["ext"];
   var toParam = query["to"];
+  const createDemoData = convertBoolean(query["demo"], false);
   if (!extParam) {
     throw createError({
       statusCode: 400,
@@ -33,7 +34,7 @@ export default defineEventHandler((event) => {
         statusMessage: "Parameter 'to' is not possible when migrating all",
       });
     }
-    runAllMigrations(exts);
+    runAllMigrations(exts, createDemoData);
     return {
       detail: "Running all migrations",
     };

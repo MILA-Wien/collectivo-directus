@@ -6,8 +6,8 @@ import {
 } from "@directus/sdk";
 
 const migration = {
-  id: 4,
-  name: "004_tiles",
+  id: 5,
+  name: "005_forms",
   up: createTiles,
   down: deleteTiles,
 };
