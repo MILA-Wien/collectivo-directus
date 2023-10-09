@@ -57,9 +57,8 @@ async function createTiles() {
     STATUS_FIELD,
     ...DIRECTUS_SYSTEM_FIELDS,
     {
-      field: "collectivo_name",
+      field: "name",
       type: "string",
-
       schema: {
         is_nullable: false,
         is_unique: true,
@@ -74,7 +73,7 @@ async function createTiles() {
       },
     },
     {
-      field: "collectivo_content",
+      field: "content",
       type: "text",
       schema: {},
       meta: {

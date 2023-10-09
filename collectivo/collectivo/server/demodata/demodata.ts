@@ -42,5 +42,20 @@ export default async function createDemoData() {
     console.log(error);
   }
 
+  // Create some tiles
+  const tileNames = ["Tile 1", "Tile 2", "Tile 3", "Tile 4"];
+  const tiles = [];
+  for (const tileName of tileNames) {
+    tiles.push({
+      name: tileName,
+      content: "Hello! I am an example tile!",
+    });
+  }
+  try {
+    await directus.request(createItems("collectivo_tiles", tiles));
+  } catch (error) {
+    console.log(error);
+  }
+
   console.log("Creating demo data for collectivo succeeded");
 }

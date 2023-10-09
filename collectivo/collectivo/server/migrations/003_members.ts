@@ -55,6 +55,7 @@ async function createMembers() {
       archive_field: "status",
       archive_value: "ended",
       unarchive_value: "draft",
+      display_template: "{{first_name}} {{last_name}}",
       // @ts-ignore
       sort: 1,
       translations: [
@@ -97,7 +98,9 @@ async function createMembers() {
     {
       field: "email",
       type: "string",
-      schema: {},
+      schema: {
+        is_unique: true,
+      },
       meta: {
         interface: "input",
         sort: 3,
@@ -163,7 +166,11 @@ async function createMembers() {
       meta: {
         interface: "list-m2m",
         sort: 3,
-
+        options: {
+          layout: "table",
+          enableSearchFilter: true,
+          fields: ["collectivo_tags_id.name"],
+        },
         special: ["m2m"],
         translations: [
           { language: "en-US", translation: "Tags" },
@@ -208,6 +215,7 @@ async function createTags() {
       archive_field: "status",
       archive_value: "archived",
       unarchive_value: "published",
+      display_template: "{{name}}",
       translations: [
         {
           language: "en-US",

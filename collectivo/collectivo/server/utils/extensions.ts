@@ -15,6 +15,7 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "user",
   "date",
   "email",
+  "content",
   "name",
   "notes",
   "version",
