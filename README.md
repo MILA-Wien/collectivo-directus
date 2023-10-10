@@ -6,13 +6,15 @@ An experimental setup for Collectivo based on [Directus](https://directus.io/), 
 
 Collectivo is a set of modular [Nuxt Layers](https://nuxt.com/docs/guide/going-further/layers) that can be added to a [Nuxt App](https://nuxt.com/) and easily be combined with custom code for each project.
 
-The core module provides the basic functionality for a Collectivo app, including authentication with a keycloak server and connection to a directus database. Extension modules can import code from the core module as well as from each other (although circular dependencies are of course not possible). Database migrations can be defined by each module and are run automatically on startup.
+The core functionalities of Collectivo include authentication with a keycloak server, connection to a directus database, a migration system, a dashboard, and a basic database structure.
+
+Extension modules can import code from collectivo as well as from each other (circular dependencies are not possible).
 
 ## Structure
 
 - collectivo (Nuxt)
-    - app - An application of Collectivo with all modules
-    - core - Core functionality
+    - dev_app - An application of Collectivo for development
+    - collectivo - Core functionalities
     - extensions - Optional modules
 - directus - Database, API & Admin app
 - keycloak - Authentication server
@@ -28,14 +30,11 @@ Start a development system with:
 
 ```
 cp .env.example .env
-cp collectivo/.env.example collectivo/.env
 docker compose build
 docker compose up -d
 pnpm install
 pnpm dev
 ```
-
-If directus cannot write to the database, you might need to call `sudo chmod -R 777 directus/database` once.
 
 This creates a docker container for Directus and Keycloak, and then starts a development server for the Collectivo app.
 
@@ -46,28 +45,27 @@ Available services:
 - Directus: http://localhost:8055/
 - Keycloak: http://localhost:8080/
 
-Udate dependencies
+Collectivo API for migrations (requires API token in authentication header)
 
-```
-pnpm update -r -L
-```
+- `/api/migrate/all` - Migrate all extensions
+    - `?demo=true` adds demo data
+- `/api/migrate/?ext=extensionName` - Migrate a specific extension
+    - `?to=1` run migrations up or down towards a specific version
+- `/api/migrate/force/?ext=extensionName&id=1` - Migrate a specific migration
 
-Publish all packages (remove --dry-run)
+Tips:
+- If directus cannot write to the database, try `sudo chmod -R 777 directus/database`
+- To reset the database, run
+    - `docker volume rm collectivo_directus-db-data`
+    - `docker compose restart directus directus-cache directus-db`
 
-```
-pnpm login
-pnpm publish -r --access=public --dry-run
-```
+- Udate dependencies `pnpm update -r -L`
+- Publish all packages (remove --dry-run) `pnpm publish -r --access=public --dry-run`
+- To run unit tests, use: `pnpm test`
 
-### Testing
+## Extensions
 
-To run unit tests, use:
-
-```
-pnpm test
-```
-
-### Conventions for extensions
-
+- Create a new [Nuxt Layer](https://nuxt.com/docs/guide/going-further/layers)
+- Register the extension in `my-extension/server/plugins/registerExtension.ts`
+- Add the extension to `package.json` and `nuxt.config.ts` of your app
 - All collections and fields should start with `extensionName_` to avoid name conflicts.
-- Extensions cannot not be named `status`, `sort`, `user`, or `date`.
