@@ -58,7 +58,8 @@ async function createExtensions() {
       schema: { is_unique: true, is_nullable: false },
       meta: {
         required: true,
-        sort: 2, // 1 is id
+        width: "half",
+        sort: 1,
         translations: [
           { language: "en-US", translation: "Name" },
           { language: "de-DE", translation: "Name" },
@@ -70,8 +71,8 @@ async function createExtensions() {
       field: "status",
       type: "string",
       meta: {
-        width: "full",
-        sort: 3,
+        width: "half",
+        sort: 2,
         options: {
           choices: [
             { text: "$t:active", value: "active" },
@@ -124,7 +125,7 @@ async function createExtensions() {
       meta: {
         translations: [
           { language: "en-US", translation: "Migration state" },
-          { language: "de-DE", translation: "Migrations status" },
+          { language: "de-DE", translation: "Migrationslevel" },
         ],
         options: { iconLeft: "database" },
         sort: 5,
