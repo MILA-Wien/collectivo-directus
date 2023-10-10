@@ -1,5 +1,5 @@
 {
-  "name": "@collectivo/app",
+  "name": "@collectivo/dev_app",
   "private": true,
   "scripts": {
     "build": "nuxt build",
@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@collectivo/collectivo": "workspace:*",
-    "@collectivo/members": "workspace:*"
+    "@collectivo/coop": "workspace:*",
+    "collectivo_mila": "workspace:*"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

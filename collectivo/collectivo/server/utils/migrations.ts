@@ -1,16 +1,4 @@
-import {
-  createItem,
-  readItems,
-  updateItem,
-  createCollection,
-  createField,
-  DirectusCollection,
-  DirectusField,
-  NestedPartial,
-  readCollection,
-  updateCollection,
-  updateField,
-} from "@directus/sdk";
+import { createItem, readItems, updateItem } from "@directus/sdk";
 
 import { ExtensionConfig } from "./extensions";
 import ExtensionCollectionMigration from "./../migrations/001_extensions";

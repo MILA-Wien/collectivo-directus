@@ -3,6 +3,7 @@ import { CollectivoMigration } from "./migrations";
 // Define extension setup function
 export interface ExtensionConfig {
   name: string;
+  description?: string;
   version: string;
   migrations?: CollectivoMigration[];
   demoData?: () => Promise<void>;
@@ -16,6 +17,7 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "date",
   "email",
   "content",
+  "files",
   "name",
   "notes",
   "version",

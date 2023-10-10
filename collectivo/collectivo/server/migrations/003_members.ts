@@ -2,9 +2,6 @@ import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
-  createItem,
-  createRelation,
-  deleteRelation,
   deleteCollection,
 } from "@directus/sdk";
 
@@ -38,6 +35,8 @@ async function createMembersAndTags() {
   await createMembers();
   await createTags();
   await createMemberTagRelation();
+  await createMemberFileRelations("visible");
+  await createMemberFileRelations("hidden");
 }
 
 async function createMembers() {
@@ -76,7 +75,6 @@ async function createMembers() {
   };
   const fields = [
     ...DIRECTUS_SYSTEM_FIELDS,
-    NOTES_FIELD,
     {
       field: "first_name",
       type: "string",
@@ -84,6 +82,10 @@ async function createMembers() {
         width: "half",
         sort: 1,
         require: true,
+        translations: [
+          { language: "en-US", translation: "First name" },
+          { language: "de-DE", translation: "Vorname" },
+        ],
       },
     },
     {
@@ -93,6 +95,10 @@ async function createMembers() {
         width: "half",
         sort: 2,
         require: true,
+        translations: [
+          { language: "en-US", translation: "Last name" },
+          { language: "de-DE", translation: "Nachname" },
+        ],
       },
     },
     {
@@ -102,9 +108,8 @@ async function createMembers() {
         is_unique: true,
       },
       meta: {
-        interface: "input",
         sort: 3,
-        with: "half",
+        width: "half",
         validation: {
           _and: [
             {
@@ -117,6 +122,10 @@ async function createMembers() {
         },
         validation_message: "Not a valid email address",
         options: { iconRight: "mail" },
+        translations: [
+          { language: "en-US", translation: "Email" },
+          { language: "de-DE", translation: "Email" },
+        ],
       },
     },
     {
@@ -130,7 +139,7 @@ async function createMembers() {
         interface: "select-dropdown-m2o",
         special: ["m2o"],
         width: "half",
-        sort: 1,
+        sort: 4,
         required: false,
         options: {
           template: "{{first_name}} {{last_name}}",
@@ -147,7 +156,7 @@ async function createMembers() {
       type: "string",
       meta: {
         width: "half",
-        sort: 2,
+        sort: 5,
         options: {
           choices: [
             { text: "$t:draft", value: "draft" },
@@ -165,7 +174,7 @@ async function createMembers() {
 
       meta: {
         interface: "list-m2m",
-        sort: 3,
+        sort: 50,
         options: {
           layout: "table",
           enableSearchFilter: true,
@@ -176,6 +185,10 @@ async function createMembers() {
           { language: "en-US", translation: "Tags" },
           { language: "de-DE", translation: "Tags" },
         ],
+        display: "related-values",
+        display_options: {
+          template: "{{collectivo_tags_id.name}}",
+        },
       },
     },
     {
@@ -183,7 +196,45 @@ async function createMembers() {
       type: "text",
       schema: {},
       meta: {
-        sort: 4,
+        sort: 60,
+        interface: "input-rich-text-md",
+      },
+      collection: "members_memberships",
+    },
+    {
+      field: "files_visible",
+      type: "alias",
+      meta: {
+        interface: "files",
+        special: ["files"],
+        sort: 70,
+        note: "Files that are visible to the member.",
+        translations: [
+          { language: "en-US", translation: "Files (visible)" },
+          { language: "de-DE", translation: "Dateien (sichtbar)" },
+        ],
+      },
+    },
+    {
+      field: "files_hidden",
+      type: "alias",
+      note: "Files that are only visible to administrators.",
+      meta: {
+        interface: "files",
+        sort: 71,
+        special: ["files"],
+        translations: [
+          { language: "en-US", translation: "Files (hidden)" },
+          { language: "de-DE", translation: "Dateien (versteckt)" },
+        ],
+      },
+    },
+    {
+      field: "notes",
+      type: "text",
+      schema: {},
+      meta: {
+        sort: 60,
         interface: "input-rich-text-md",
       },
       collection: "members_memberships",
@@ -310,6 +361,58 @@ async function createMemberTagRelation() {
         sort_field: null,
         one_deselect_action: "nullify",
         junction_field: "collectivo_tags_id",
+      },
+      schema: { on_delete: "SET NULL" },
+    },
+  ];
+
+  await createOrUpdateDirectusCollection(collection, fields, relations);
+}
+
+async function createMemberFileRelations(postfix: string) {
+  const collection: NestedPartial<DirectusCollection<any>> = {
+    collection: "collectivo_members_files_" + postfix,
+    meta: { hidden: true, icon: "import_export" },
+    schema: EMPTY_SCHEMA,
+  };
+
+  const fields = [
+    {
+      field: "collectivo_members_id",
+      type: "integer",
+      schema: {},
+      meta: { hidden: true },
+    },
+    {
+      field: "directus_files_id",
+      type: "integer",
+      schema: {},
+      meta: { hidden: true },
+    },
+  ];
+
+  const relations = [
+    {
+      collection: "collectivo_members_files_" + postfix,
+      field: "directus_files_id",
+      related_collection: "directus_files",
+      meta: {
+        one_field: null, // No field in files collection
+        sort_field: null,
+        one_deselect_action: "nullify",
+        junction_field: "collectivo_members_id",
+      },
+      schema: { on_delete: "SET NULL" },
+    },
+    {
+      collection: "collectivo_members_files_" + postfix,
+      field: "collectivo_members_id",
+      related_collection: "collectivo_members",
+      meta: {
+        one_field: "files_" + postfix,
+        sort_field: null,
+        one_deselect_action: "nullify",
+        junction_field: "directus_files_id",
       },
       schema: { on_delete: "SET NULL" },
     },
