@@ -18,15 +18,23 @@ services:
       KEY: "0fda9121-269d-44bd-91f2-4ff05be14b4b"
       SECRET: "86cb4a76-a4c6-4ce7-8181-b0445d95675c"
 
-      DB_CLIENT: "sqlite3"
-      DB_FILENAME: "/directus/database/data.db"
-
       ADMIN_EMAIL: "admin@example.com"
       ADMIN_PASSWORD: "d1r3ctu5"
 
       CORS_ENABLED: "true"
       CORS_ORIGIN: "true"
       EXTENSIONS_AUTO_RELOAD: "true"
+
+      DB_CLIENT: "pg"
+      DB_HOST: "directus-db"
+      DB_PORT: "5432"
+      DB_DATABASE: "directus"
+      DB_USER: "directus"
+      DB_PASSWORD: ${DIRECTUS_DB_PASSWORD}
+
+      CACHE_ENABLED: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis://directus-cache:6379"
 
       PUBLIC_URL: "http://localhost:8055"
 
@@ -43,6 +51,25 @@ services:
       REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
 
       LOG_LEVEL: "debug"
+
+  directus-db:
+    container_name: directus-db
+    image: postgis/postgis:15-3.4-alpine
+    volumes:
+      - directus-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: "directus"
+      POSTGRES_PASSWORD: ${DIRECTUS_DB_PASSWORD}
+      POSTGRES_DB: "directus"
+
+  directus-cache:
+    container_name: directus-cache
+    image: redis:6
 
   keycloak-db:
     image: postgres:15.4-alpine
@@ -89,4 +116,5 @@ services:
       - "8080:8080"
 
 volumes:
+  directus-db-data:
   keycloak-db-data:

@@ -7,6 +7,7 @@ import {
   RestClient,
 } from "@directus/sdk";
 
+// TODO: This creates problems when login not working anymore
 // Shared server variable
 var directus: DirectusClient<any> &
   AuthenticationClient<any> &

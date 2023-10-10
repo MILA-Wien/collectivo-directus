@@ -385,7 +385,7 @@ async function createMemberFileRelations(postfix: string) {
     },
     {
       field: "directus_files_id",
-      type: "integer",
+      type: "uuid",
       schema: {},
       meta: { hidden: true },
     },

@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     collectivoVersion: pkg.version,
-    runMigrations: false,
     apiToken: "",
     directusAdminEmail: "",
     directusAdminPassword: "",
