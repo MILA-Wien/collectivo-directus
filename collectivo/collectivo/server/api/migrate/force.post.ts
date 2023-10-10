@@ -1,14 +1,15 @@
 // Run a specific migration for an extension, regardless of current state in db
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   console.log("Forcing migration");
   // Protect endpoint
   verifyCollectivoApiToken(event);
+  await refreshDirectus();
 
   // Read parameters
   const query = getQuery(event);
   const extParam = query["ext"];
   const idParam = Number(query["id"]);
-  const downParam = convertBoolean(query["down"], false);
+  const downParam = parseBoolean(query["down"], false);
   if (!extParam) {
     throw createError({
       statusCode: 400,

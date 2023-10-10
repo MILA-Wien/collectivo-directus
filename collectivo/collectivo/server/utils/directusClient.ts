@@ -7,24 +7,28 @@ import {
   RestClient,
 } from "@directus/sdk";
 
-// TODO: This creates problems when login not working anymore
 // Shared server variable
 var directus: DirectusClient<any> &
   AuthenticationClient<any> &
   RestClient<any>;
 
+// Refresh Directus client with admin credentials
+export async function refreshDirectus() {
+  const config = useRuntimeConfig();
+  directus = createDirectus(config.public.directusUrl)
+    .with(authentication())
+    .with(rest());
+  await directus.login(
+    config.directusAdminEmail,
+    config.directusAdminPassword,
+    {}
+  );
+}
+
 // Return Directus admin client for server plugins
 export async function useDirectus() {
-  const config = useRuntimeConfig();
   if (directus === undefined) {
-    directus = createDirectus(config.public.directusUrl)
-      .with(authentication())
-      .with(rest());
-    await directus.login(
-      config.directusAdminEmail,
-      config.directusAdminPassword,
-      {}
-    );
+    await refreshDirectus();
   }
   return directus;
 }

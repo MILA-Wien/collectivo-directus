@@ -1,4 +1,4 @@
-export function convertBoolean(value: any, defaultValue?: boolean) {
+export function parseBoolean(value: any, defaultValue?: boolean) {
   if (value === "true" || value === true) {
     return true;
   }

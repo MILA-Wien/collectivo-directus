@@ -1,13 +1,14 @@
 // Run pending migrations for a set of extensions, based on current state in db
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   // Protect route with API Token
   verifyCollectivoApiToken(event);
+  await refreshDirectus();
 
   // Read parameters
   const query = getQuery(event);
   const extParam = query["ext"];
   var toParam = query["to"];
-  const createDemoData = convertBoolean(query["demo"], false);
+  const createDemoData = parseBoolean(query["demo"], false);
   if (!extParam) {
     throw createError({
       statusCode: 400,
