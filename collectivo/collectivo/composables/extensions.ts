@@ -1,12 +1,12 @@
 import { readItems } from "@directus/sdk";
 
 export const useExtensions = () =>
-  useState<CoreExtension[] | null>("core_extensions", () => null);
+  useState<CollectivoExtension[] | null>("collectivo_extensions", () => null);
 
 export const getExtensions = async () => {
   const { $directus } = useNuxtApp();
   const extensions = useExtensions();
   extensions.value =
-    (await $directus?.request(readItems("core_extensions"))) || null;
+    (await $directus?.request(readItems("collectivo_extensions"))) || null;
   return extensions;
 };

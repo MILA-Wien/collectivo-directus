@@ -16,12 +16,12 @@ async function authorizeDirectus(directus: AuthenticationClient<any>) {
   return directus;
 }
 
-async function loadCurrentUser(directus: RestClient<CoreSchema>) {
+async function loadCurrentUser(directus: RestClient<CollectivoSchema>) {
   const user = useCurrentUser();
   // @ts-ignore
   user.value = await directus.request(
     readMe({
-      fields: ["first_name", "last_name", "email"],
+      fields: ["id", "first_name", "last_name", "email"],
     })
   );
 }
@@ -34,7 +34,7 @@ export default defineNuxtPlugin({
     var directus;
     var isAuthenticated = false;
     try {
-      directus = createDirectus<CoreSchema>(
+      directus = createDirectus<CollectivoSchema>(
         runtimeConfig.public.directusUrl as string
       )
         .with(

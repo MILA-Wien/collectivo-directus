@@ -7,7 +7,7 @@ import {
 export default defineNuxtPlugin((NuxtApp) => {
   const menu = useSidebarMenu();
   const runtimeConfig = useRuntimeConfig();
-  const items = <CoreMenuItem[]>[
+  const items = <CollectivoMenuItem[]>[
     {
       icon: HomeIcon,
       label: "Home",
@@ -17,7 +17,7 @@ export default defineNuxtPlugin((NuxtApp) => {
     {
       icon: UserCircleIcon,
       label: "Profile",
-      link: "/core/profile",
+      link: "/profile",
       order: 0,
     },
     {

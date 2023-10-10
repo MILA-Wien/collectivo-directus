@@ -15,49 +15,75 @@ declare global {
   }
 
   // Directus schema types
-  interface CoreMenuItem {
+  interface CollectivoMenuItem {
     label: string;
     link?: string;
     icon?: FunctionalComponent;
     external?: boolean;
     target?: string;
-    children?: CoreMenuItem[];
+    children?: CollectivoMenuItem[];
     order?: number; // Defaults to 100
-    filter?: (item: CoreMenuItem) => boolean;
+    filter?: (item: CollectivoMenuItem) => boolean;
   }
 
-  interface CoreExtension {
+  interface CollectivoExtension {
     id: number;
-    core_name: string;
-    core_version: string;
-    core_migration: number;
+    name: string;
+    version: string;
+    migration_state: number;
   }
 
-  interface CoreTile {
+  interface CollectivoSettings {
     id: number;
-    core_name: string;
-    core_content: string;
+    collectivo_project_name: string;
+    collectivo_project_description: string;
   }
 
-  interface CoreTag {
-    id: number;
-    core_name: string;
-    core_color: string;
+  interface CollectivoCurrentUser {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
   }
 
-  interface CoreCurrentUser {
+  interface CollectivoMember {
     id: number;
     first_name: string;
     last_name: string;
     email: string;
-    core_tags: CoreTag[];
+    user: DirectusUser | number;
+    status: number;
+    collectivo_tags: CollectivoTag[] | number[];
+    notes: string;
+    files_visible: any;
+    files_hidden: any;
   }
 
-  interface CoreSchema {
-    core_extensions: CoreExtension[];
-    core_tiles: CoreTile[];
-    core_tags: CoreTag[];
-    directus_users: CoreUser[];
+  interface CollectivoTag {
+    id: number;
+    name: string;
+    collectivo_members: CollectivoMember[] | number[];
+  }
+
+  interface CollectivoTile {
+    id: number;
+    name: string;
+    content: string;
+  }
+
+  interface CollectivoSchema {
+    collectivo_extensions: CollectivoExtension[];
+    collectivo_members: CollectivoMember[];
+    collectivo_tiles: CollectivoTile[];
+    collectivo_tags: CollectivoTag[];
+    directus_users: CollectivoUser[];
+  }
+
+  // Wrappers
+  interface DataWrapper<T> {
+    data: T | null | undefined;
+    error: any;
+    loading: boolean;
   }
 }
 

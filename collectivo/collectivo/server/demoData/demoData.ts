@@ -23,19 +23,24 @@ export default async function createDemoData() {
 
   // Create some tags
   const tagNames = ["Has a dog", "Has a cat", "Has a bird", "Has a fish"];
-  const tags = [];
+  const tags: any[] = [];
   for (const tagName of tagNames) {
     tags.push({
       name: tagName,
-      collectivo_members: {
-        create: [
-          { collectivo_tags_id: "+", collectivo_members_id: { id: 1 } },
-          { collectivo_tags_id: "+", collectivo_members_id: { id: 2 } },
-          { collectivo_tags_id: "+", collectivo_members_id: { id: 3 } },
-        ],
-      },
     });
   }
+
+  // Add some members to some tags
+  for (var i = 0; i < 2; i++) {
+    tags[i].collectivo_members = {
+      create: [
+        { collectivo_tags_id: "+", collectivo_members_id: { id: 1 } },
+        { collectivo_tags_id: "+", collectivo_members_id: { id: 2 } },
+        { collectivo_tags_id: "+", collectivo_members_id: { id: 3 } },
+      ],
+    };
+  }
+
   try {
     await directus.request(createItems("collectivo_tags", tags));
   } catch (error) {

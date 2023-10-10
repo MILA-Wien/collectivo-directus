@@ -1,27 +1,28 @@
 <template>
-  <div>
-    Installed extensions:
-    <div v-if="error">Error: {{ error }}</div>
-    <div v-else-if="extensions === null">Loading</div>
-    <div v-else>
-      <div v-for="extension in extensions" :key="extension.id">
-        {{ extension.core_name }} - {{ extension.core_version }}
-      </div>
+  <div class="gap-5 columns-2">
+    <div
+      v-for="tile in tiles.data"
+      class="border-solid border-2 border-sky-500 p-4 mb-5 inline-block w-full break-words">
+      <div v-html="parse(tile.content)"></div>
     </div>
-    Current user: {{ currentUser }}
-  </div>
-  <div>
-    Available extensions (from nuxt API):
-    {{ registeredExtensions?.registeredExtensions }}
   </div>
 </template>
 
 <script setup lang="ts">
+import { readItems } from "@directus/sdk";
+import { parse } from "marked";
 const { t } = useI18n();
 const currentUser = useCurrentUser();
-const error = ref(null);
-const extensions = useExtensions();
-if (extensions.value === null) getExtensions().catch((e) => (error.value = e));
+const tiles = useTiles();
+getTiles();
+console.log(tiles.value.data);
+
+const { $directus } = useNuxtApp();
+async function test() {
+  const x = await $directus?.request(readItems("collectivo_tiles"));
+  console.log(x);
+}
+test();
 
 // Fetch extensions from nuxt API
 const registeredExtensions = ref<any>(null);
