@@ -9,27 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { readItems } from "@directus/sdk";
 import { parse } from "marked";
-const { t } = useI18n();
-const currentUser = useCurrentUser();
 const tiles = useTiles();
 getTiles();
-console.log(tiles.value.data);
-
-const { $directus } = useNuxtApp();
-async function test() {
-  const x = await $directus?.request(readItems("collectivo_tiles"));
-  console.log(x);
-}
-test();
-
-// Fetch extensions from nuxt API
-const registeredExtensions = ref<any>(null);
-async function getRegisteredExtensions() {
-  const response = await fetch("/api/extensions");
-  const data = await response.json();
-  registeredExtensions.value = data;
-}
-getRegisteredExtensions();
 </script>

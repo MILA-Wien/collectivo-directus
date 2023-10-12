@@ -43,8 +43,8 @@ async function createCollectivoRole(
   await directus.request(
     createRole({
       name: name,
-      admin_access: false,
-      app_access: false,
+      admin_access: admin_access,
+      app_access: app_access,
     })
   );
 }

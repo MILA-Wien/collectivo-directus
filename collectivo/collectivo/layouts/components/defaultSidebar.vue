@@ -24,15 +24,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!$isAuthenticated">
-      <a :href="loginPath">
-        <div class="flex flex-row gap-2">
-          <ArrowRightOnRectangleIcon class="h-5 w-5" />
-          <div>{{ t("Login") }}</div>
-        </div>
-      </a>
-    </div>
-    <div v-else>
+    <div>
       <a :href="logoutPath">
         <div class="flex flex-row gap-2">
           <ArrowLeftOnRectangleIcon class="h-5 w-5" />
@@ -50,23 +42,19 @@
       </form>
     </div>
     <div>Collectivo V2 v{{ pkg.version }}</div>
+    <div>Authenticated as {{ currentUser.data?.email }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ArrowRightOnRectangleIcon,
-  ArrowLeftOnRectangleIcon,
-} from "@heroicons/vue/24/outline";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/vue/24/outline";
 import pkg from "../../package.json";
 
 const { t, locale } = useI18n();
 const appConfig = useAppConfig();
-const { $isAuthenticated } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
+const currentUser = useCurrentUser();
 
-// Prepare SSO links
-const loginPath = `${runtimeConfig.public.directusUrl}/auth/login/keycloak?redirect=${runtimeConfig.public.collectivoUrl}`;
 const logoutPath = `${runtimeConfig.public.keycloakUrl}/realms/collectivo/protocol/openid-connect/logout`;
 
 // Prepare menu items

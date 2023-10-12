@@ -1,4 +1,5 @@
 import {
+  createItem,
   createItems,
   createUser,
   createUsers,
@@ -8,6 +9,7 @@ import {
   readRoles,
   readSingleton,
   readUsers,
+  updateCollection,
   updateItems,
   updateUser,
   updateUsers,
@@ -50,11 +52,15 @@ export default async function demoData() {
   ];
   const users = [];
   for (const userName of userNames) {
+    const email = `${userName.toLowerCase()}@example.com`;
     const u = {
       first_name: userName,
       last_name: "Example",
-      email: `${userName.toLowerCase()}@example.com`,
+      email: email,
       role: memberRole,
+      provider: "keycloak",
+      status: "active",
+      external_identifier: email,
     };
     if (userName == "Admin") {
       u.role = adminRole;
@@ -72,11 +78,22 @@ export default async function demoData() {
           filter: { email: { _eq: user.email } },
         })
       );
+      var userID;
       if (usersDB.length > 0) {
-        await directus.request(updateUser(usersDB[0].id, user));
+        userID = usersDB[0].id;
+        await directus.request(updateUser(userID, user));
       } else {
-        await directus.request(createUser(user));
+        const us = await directus.request(createUser(user));
+        userID = us.id;
       }
+      directus.request(
+        createItem("collectivo_members", {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          email: user.email,
+          user: userID,
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -93,15 +110,15 @@ export default async function demoData() {
   }
 
   // Add some members to some tags
-  // for (var i = 0; i < 3; i++) {
-  //   tags[i].collectivo_members = {
-  //     create: [
-  //       { collectivo_tags_id: "+", collectivo_members_id: { id: 1 } },
-  //       { collectivo_tags_id: "+", collectivo_members_id: { id: 2 } },
-  //       { collectivo_tags_id: "+", collectivo_members_id: { id: 3 } },
-  //     ],
-  //   };
-  // }
+  for (var i = 0; i < 3; i++) {
+    tags[i].collectivo_members = {
+      create: [
+        { collectivo_tags_id: "+", collectivo_members_id: { id: 1 } },
+        { collectivo_tags_id: "+", collectivo_members_id: { id: 2 } },
+        { collectivo_tags_id: "+", collectivo_members_id: { id: 3 } },
+      ],
+    };
+  }
 
   try {
     await directus.request(createItems("collectivo_tags", tags));
