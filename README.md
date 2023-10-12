@@ -1,47 +1,53 @@
 # Collectivo2
 
-An experimental setup for Collectivo based on [Directus](https://directus.io/), [Keycloak](https://www.keycloak.org/), and [Nuxt](https://nuxtjs.org/).
-
-## Overview
-
-Collectivo is a set of modular [Nuxt Layers](https://nuxt.com/docs/guide/going-further/layers) that can be added to a [Nuxt App](https://nuxt.com/) and easily be combined with custom code for each project.
-
-The core functionalities of Collectivo include authentication with a keycloak server, connection to a directus database, a migration system, a dashboard, and a basic database structure.
-
-Extension modules can import code from collectivo as well as from each other (circular dependencies are not possible).
+An experimental setup for Collectivo based on [Nuxt Layers](https://nuxt.com/docs/guide/going-further/layers), [Directus](https://directus.io/), and [Keycloak](https://www.keycloak.org/).
 
 ## Structure
 
-- collectivo (Nuxt)
-    - dev_app - An application of Collectivo for development
+- collectivo - Frontend & API
+    - dev_app - Example application
     - collectivo - Core functionalities
     - extensions - Optional modules
-- directus - Database, API & Admin app
-- keycloak - Authentication server
+- directus - Database, API, & Admin app
+- keycloak - Authentication
 
 ## Development
+
+### Installation
 
 Install the following requirements:
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [pnpm](https://pnpm.io/installation)
 
-Start a development system with:
+Add the following to your `etc/hosts` file:
+
+```
+127.0.0.1 keycloak
+```
+
+Prepare the environment:
 
 ```
 cp .env.example .env
 docker compose up -d keycloak
+pnpm install
 ```
 
 Wait for keycloak to be ready, then run:
 
 ```
 docker compose up -d
-pnpm install
 pnpm dev
 ```
 
-Finally, to run migrations, run:
+The following services should now be available:
+
+- Collectivo/Nuxt: http://localhost:3000/
+- Directus: http://localhost:8055/
+- Keycloak: http://localhost:8080/
+
+Then run migrations & create example data as follows, run:
 
 ```
 curl \
@@ -50,16 +56,17 @@ curl \
   http://localhost:3000/api/migrate/all/?demo=true
 ```
 
-This creates a docker container for Directus and Keycloak, and then starts a development server for the Collectivo app.
+You can then log in with the following example users:
 
-Available services:
+- Admin: admin@example.com / admin
+- Editor: editor@example.com / editor
+- User: user@example.com / user
 
-- Collectivo: http://localhost:3000/
-    - Tailwind: http://localhost:3000/_tailwind/
-- Directus: http://localhost:8055/
-- Keycloak: http://localhost:8080/
+### Migrations
 
-Collectivo API for migrations (requires API token in authentication header)
+Migrations can be run via the API, using the NUXT_API_TOKEN.
+
+Endpoints:
 
 - `/api/migrate/all` - Migrate all extensions
     - `?demo=true` adds demo data
@@ -67,7 +74,12 @@ Collectivo API for migrations (requires API token in authentication header)
     - `?to=1` run migrations up or down towards a specific version
 - `/api/migrate/force/?ext=extensionName&id=1` - Migrate a specific migration
 
-Tips:
+### Unit testing
+
+- To run unit tests, use: `pnpm test`
+
+### Troubleshooting
+
 - If directus cannot write to the database, try `sudo chmod -R 777 directus/database`
 - To reset the database, run
     - `docker volume rm collectivo_directus-db-data`
@@ -75,13 +87,8 @@ Tips:
 
 - Udate dependencies `pnpm update -r -L`
 - Publish all packages (remove --dry-run) `pnpm publish -r --access=public --dry-run`
-- To run unit tests, use: `pnpm test`
 
-## Demo users
-
-- Keycloak admin: admin@example.com / admin
-
-## Extensions
+### Creating a new extension
 
 - Create a new [Nuxt Layer](https://nuxt.com/docs/guide/going-further/layers)
 - Register the extension in `my-extension/server/plugins/registerExtension.ts`
