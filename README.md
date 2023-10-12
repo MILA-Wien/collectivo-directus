@@ -64,7 +64,7 @@ You can then log in with the following example users:
 
 ### Migrations
 
-Migrations can be run via the API, using the NUXT_API_TOKEN.
+Migrations can be run via the Nuxt API, using `NUXT_API_TOKEN` from `.env`.
 
 Endpoints:
 
@@ -72,7 +72,7 @@ Endpoints:
     - `?demo=true` adds demo data
 - `/api/migrate/?ext=extensionName` - Migrate a specific extension
     - `?to=1` run migrations up or down towards a specific version
-- `/api/migrate/force/?ext=extensionName&id=1` - Migrate a specific migration
+- `/api/migrate/force/?ext=extensionName&id=1` - Run a specific migration
 
 ### Unit testing
 
@@ -82,9 +82,8 @@ Endpoints:
 
 - If directus cannot write to the database, try `sudo chmod -R 777 directus/database`
 - To reset the database, run
-    - `docker volume rm collectivo_directus-db-data`
+    - drop table
     - `docker compose restart directus directus-cache directus-db`
-
 - Udate dependencies `pnpm update -r -L`
 - Publish all packages (remove --dry-run) `pnpm publish -r --access=public --dry-run`
 
