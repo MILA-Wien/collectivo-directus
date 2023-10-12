@@ -4,7 +4,9 @@ import {
   DirectusField,
   NestedPartial,
   createItem,
+  createRole,
   deleteCollection,
+  readRoles,
 } from "@directus/sdk";
 
 const migration: CollectivoMigration = {
@@ -21,7 +23,37 @@ async function deleteSettings() {
   await directus.request(deleteCollection("collectivo_settings"));
 }
 
+async function createCollectivoRole(
+  name: string,
+  app_access = false,
+  admin_access = false
+) {
+  const directus = await useDirectus();
+
+  const membersRoles = await directus.request(
+    readRoles({
+      filter: {
+        name: { _eq: name },
+      },
+    })
+  );
+
+  if (membersRoles.length > 0) return;
+
+  await directus.request(
+    createRole({
+      name: name,
+      admin_access: false,
+      app_access: false,
+    })
+  );
+}
+
 async function createSettings() {
+  createCollectivoRole("collectivo_member");
+  createCollectivoRole("collectivo_editor", true);
+  createCollectivoRole("collectivo_admin", true, true);
+
   const collection: NestedPartial<DirectusCollection<any>> = {
     collection: "collectivo_settings",
     schema: {
@@ -77,19 +109,6 @@ async function createSettings() {
           { language: "en-US", translation: "Project description" },
           { language: "de-DE", translation: "Projektbeschreibung" },
         ],
-      },
-    },
-    {
-      field: "collectivo_editor_role",
-      type: "string",
-      meta: {
-        hidden: true,
-        sort: 100,
-        translations: [
-          { language: "en-US", translation: "Editor Role" },
-          { language: "de-DE", translation: "Editor Rolle" },
-        ],
-        note: "ID of the editor role",
       },
     },
   ];

@@ -37,6 +37,8 @@ declare global {
     id: number;
     collectivo_project_name: string;
     collectivo_project_description: string;
+    collectivo_members_role: string;
+    collectivo_admin_role: string;
   }
 
   interface CollectivoCurrentUser {

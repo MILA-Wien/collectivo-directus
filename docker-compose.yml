@@ -18,8 +18,8 @@ services:
       KEY: "0fda9121-269d-44bd-91f2-4ff05be14b4b"
       SECRET: "86cb4a76-a4c6-4ce7-8181-b0445d95675c"
 
-      ADMIN_EMAIL: "admin@example.com"
-      ADMIN_PASSWORD: "d1r3ctu5"
+      ADMIN_EMAIL: ${NUXT_DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${NUXT_DIRECTUS_ADMIN_PASSWORD}
 
       CORS_ENABLED: "true"
       CORS_ORIGIN: "true"
@@ -45,15 +45,14 @@ services:
       AUTH_KEYCLOAK_ISSUER_URL: "http://keycloak:8080/realms/collectivo/.well-known/openid-configuration"
       AUTH_KEYCLOAK_IDENTIFIER_KEY: "email"
       AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: "true"
+      # AUTH_KEYCLOAK_DEFAULT_ROLE_ID:
 
-      # REFRESH_TOKEN_COOKIE_DOMAIN: "http://localhost:8055"
       REFRESH_TOKEN_COOKIE_SECURE: "false"
       REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
 
       LOG_LEVEL: "debug"
 
   directus-db:
-    container_name: directus-db
     image: postgis/postgis:15-3.4-alpine
     volumes:
       - directus-db-data:/var/lib/postgresql/data
@@ -68,7 +67,6 @@ services:
       POSTGRES_DB: "directus"
 
   directus-cache:
-    container_name: directus-cache
     image: redis:6
 
   keycloak-db:

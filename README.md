@@ -31,10 +31,23 @@ Start a development system with:
 ```
 cp .env.example .env
 docker compose up -d keycloak
-(wait until keycloak is ready)
+```
+
+Wait for keycloak to be ready, then run:
+
+```
 docker compose up -d
 pnpm install
 pnpm dev
+```
+
+Finally, to run migrations, run:
+
+```
+curl \
+  --header "Authorization: badToken" \
+  --request POST \
+  http://localhost:3000/api/migrate/all/?demo=true
 ```
 
 This creates a docker container for Directus and Keycloak, and then starts a development server for the Collectivo app.

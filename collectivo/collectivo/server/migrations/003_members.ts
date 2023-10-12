@@ -2,7 +2,12 @@ import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
+  createRole,
+  updateItem,
   deleteCollection,
+  readSingleton,
+  updateSingleton,
+  readRoles,
 } from "@directus/sdk";
 
 const migration = {

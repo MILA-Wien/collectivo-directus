@@ -1,4 +1,4 @@
-import { readItems, clearCache } from "@directus/sdk";
+import { readItems } from "@directus/sdk";
 
 export function initData() {
   return {
@@ -15,7 +15,6 @@ export async function getDataFromDirectusItems(
 ) {
   if (!reload && wrapper.value.data) return wrapper;
   const { $directus } = useNuxtApp();
-  await $directus?.request(clearCache());
   wrapper.value.loading = true;
   try {
     wrapper.value.data = (await $directus?.request(readItems(name))) || null;
