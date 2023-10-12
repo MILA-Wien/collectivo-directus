@@ -4,11 +4,11 @@ An experimental setup for Collectivo based on [Nuxt Layers](https://nuxt.com/doc
 
 ## Structure
 
-- collectivo - Frontend & API
+- collectivo - Frontend & Nuxt API for migrations
     - dev_app - Example application
     - collectivo - Core functionalities
     - extensions - Optional modules
-- directus - Database, API, & Admin app
+- directus - Database, REST/GraphQL API, & Admin app
 - keycloak - Authentication
 
 ## Development
