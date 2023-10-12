@@ -80,7 +80,6 @@ Endpoints:
 
 ### Troubleshooting
 
-- If directus cannot write to the database, try `sudo chmod -R 777 directus/database`
 - To reset the database, run
     - drop table
     - `docker compose restart directus directus-cache directus-db`
