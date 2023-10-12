@@ -4,7 +4,7 @@ An experimental setup for Collectivo based on [Nuxt Layers](https://nuxt.com/doc
 
 ## Structure
 
-- collectivo - Frontend & Nuxt API for migrations
+- collectivo - Modular frontend & Nuxt API for migrations
     - dev_app - Example application
     - collectivo - Core functionalities
     - extensions - Optional modules
