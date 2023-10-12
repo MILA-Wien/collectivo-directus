@@ -47,7 +47,7 @@ The following services should now be available:
 - Directus: http://localhost:8055/
 - Keycloak: http://localhost:8080/
 
-Then run migrations & create example data as follows, run:
+Then run migrations & create example data as follows:
 
 ```
 curl \
