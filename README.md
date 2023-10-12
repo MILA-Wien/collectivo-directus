@@ -30,7 +30,8 @@ Start a development system with:
 
 ```
 cp .env.example .env
-docker compose build
+docker compose up -d keycloak
+(wait until keycloak is ready)
 docker compose up -d
 pnpm install
 pnpm dev
@@ -62,6 +63,10 @@ Tips:
 - Udate dependencies `pnpm update -r -L`
 - Publish all packages (remove --dry-run) `pnpm publish -r --access=public --dry-run`
 - To run unit tests, use: `pnpm test`
+
+## Demo users
+
+- Keycloak admin: admin@example.com / admin
 
 ## Extensions
 

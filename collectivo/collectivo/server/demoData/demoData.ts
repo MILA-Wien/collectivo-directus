@@ -1,12 +1,12 @@
 import { createItems } from "@directus/sdk";
 
-export default async function createDemoData() {
+export default async function demoData() {
   console.log("Creating demo data for collectivo");
 
   const directus = await useDirectus();
 
   // Create some users
-  const userNames = ["Alice", "Bob", "Charlie", "Dave"];
+  const userNames = ["Admin", "User", "Alice", "Bob", "Charlie", "Dave"];
   const users = [];
   for (const userName of userNames) {
     users.push({
@@ -31,7 +31,7 @@ export default async function createDemoData() {
   }
 
   // Add some members to some tags
-  for (var i = 0; i < 2; i++) {
+  for (var i = 0; i < 3; i++) {
     tags[i].collectivo_members = {
       create: [
         { collectivo_tags_id: "+", collectivo_members_id: { id: 1 } },

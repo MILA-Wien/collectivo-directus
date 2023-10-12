@@ -103,13 +103,7 @@ services:
       - ./keycloak/import:/opt/keycloak/data/import:ro
       - ./keycloak/export:/tmp/export
       - ./keycloak/healthcheck.sh:/healthcheck.sh
-    command: start-dev --import-realm
-    healthcheck:
-      # TODO: Not working
-      test: ["CMD", "curl", "--fail", "http://keycloak:8080/realms/master"]
-      interval: 5s
-      timeout: 2s
-      retries: 15
+    command: start-dev --import-realm --health-enabled true
     depends_on:
       - keycloak-db
     ports:
