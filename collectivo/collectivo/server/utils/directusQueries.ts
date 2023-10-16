@@ -9,6 +9,10 @@ import {
   DirectusRelation,
   createRelation,
   updateRelation,
+  readRoles,
+  DirectusPermission,
+  createPermission,
+  updatePermission,
 } from "@directus/sdk";
 // // Remove old fields
 // if (fieldsToRemove) {
@@ -19,6 +23,48 @@ import {
 //     } catch (e) {
 //       console.error(e);
 //       throw new Error("Could not delete field");
+//     }
+//   }
+// }
+
+// Return first role with given name
+export async function getDirectusRoleByName(name: string) {
+  const directus = await useDirectus();
+  const roles = await directus.request(
+    readRoles({
+      filter: {
+        name: { _eq: name },
+      },
+    })
+  );
+  if (roles.length < 1) {
+    throw new Error(`Could not find role "${name}"`);
+  } else if (roles.length > 1) {
+    logger.warning(`Found multiple roles with name "${name}"`);
+  }
+  return roles[0];
+}
+
+// export async function createOrUpdateDirectusPermission(
+//   roleName: string,
+//   permission: NestedPartial<DirectusPermission<any>>
+// ) {
+//   const directus = await useDirectus();
+//   const role = await getDirectusRoleByName(roleName);
+//   try {
+//     await directus.request(
+//       createPermission(permission)
+//     );
+//   } catch (e) {
+//     try {
+//       await directus.request(
+//         updatePermission()
+//       );
+//       console.log(`Updated permission for "${roleName}"`);
+//     } catch (e2) {
+//       console.error(e);
+//       console.error(e2);
+//       throw new Error("Could not create or update permission");
 //     }
 //   }
 // }

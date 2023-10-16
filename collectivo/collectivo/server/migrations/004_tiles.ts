@@ -2,6 +2,7 @@ import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
+  createPermission,
   deleteCollection,
 } from "@directus/sdk";
 
@@ -103,4 +104,18 @@ async function createTiles() {
   ];
 
   await createOrUpdateDirectusCollection(collection, fields);
+
+  // Allow reading tiles
+  const directus = await useDirectus();
+  const membersRole = await getDirectusRoleByName("collectivo_member");
+  await directus.request(
+    createPermission({
+      role: membersRole.id,
+      collection: "collectivo_tiles",
+      action: "read",
+      fields: "*",
+      permissions: {},
+      validation: {},
+    })
+  );
 }

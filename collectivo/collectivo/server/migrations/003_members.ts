@@ -8,6 +8,7 @@ import {
   readSingleton,
   updateSingleton,
   readRoles,
+  createPermission,
 } from "@directus/sdk";
 
 const migration = {
@@ -16,32 +17,18 @@ const migration = {
   description:
     "Members are the central entity of the plattform. They can be connected to a user account, but can also exist without an account.",
   up: createMembersAndTags,
-  down: deleteMembers,
+  down: deleteMembersAndTags,
 };
 
 export default migration;
 
-async function deleteMembers() {
-  console.log("Deleting members");
-  const directus = await useDirectus();
-  // await directus.request(
-  //   deleteRelation("members_memberships", "members_user")
-  // );
-
-  await directus.request(deleteCollection("collectivo_members"));
-  await directus.request(deleteCollection("collectivo_tags"));
-  await directus.request(
-    deleteCollection("collectivo_members_collectivo_tags")
-  );
-}
-
 async function createMembersAndTags() {
-  console.log("Creating members and tags");
   await createMembers();
   await createTags();
   await createMemberTagRelation();
   await createMemberFileRelations("visible");
   await createMemberFileRelations("hidden");
+  await createMemberPermissions();
 }
 
 async function createMembers() {
@@ -424,4 +411,43 @@ async function createMemberFileRelations(postfix: string) {
   ];
 
   await createOrUpdateDirectusCollection(collection, fields, relations);
+}
+
+// Allow reading own user/member data
+async function createMemberPermissions() {
+  const directus = await useDirectus();
+  const membersRole = await getDirectusRoleByName("collectivo_member");
+
+  await directus.request(
+    createPermission({
+      role: membersRole.id,
+      collection: "collectivo_members",
+      action: "read",
+      permissions: { _and: [{ user: { id: { _eq: "$CURRENT_USER" } } }] },
+      fields: "*",
+    })
+  );
+  await directus.request(
+    createPermission({
+      role: membersRole.id,
+      collection: "directus_users",
+      action: "read",
+      permissions: { _and: [{ id: { _eq: "$CURRENT_USER" } }] },
+      // @ts-ignore
+      fields: ["first_name", "last_name", "email", "id", "role"],
+    })
+  );
+}
+
+async function deleteMembersAndTags() {
+  console.log("Deleting members");
+  const directus = await useDirectus();
+
+  await directus.request(deleteCollection("collectivo_members"));
+  await directus.request(deleteCollection("collectivo_tags"));
+  await directus.request(
+    deleteCollection("collectivo_members_collectivo_tags")
+  );
+  await directus.request(deleteCollection("collectivo_members_files_visible"));
+  await directus.request(deleteCollection("collectivo_members_files_hidden"));
 }
