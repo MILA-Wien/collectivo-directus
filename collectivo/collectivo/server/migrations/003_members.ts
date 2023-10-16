@@ -2,20 +2,14 @@ import {
   DirectusCollection,
   DirectusField,
   NestedPartial,
-  createRole,
-  updateItem,
   deleteCollection,
-  readSingleton,
-  updateSingleton,
-  readRoles,
   createPermission,
 } from "@directus/sdk";
 
 const migration = {
   id: 3,
   name: "003_members",
-  description:
-    "Members are the central entity of the plattform. They can be connected to a user account, but can also exist without an account.",
+  description: "Create members and tags collections.",
   up: createMembersAndTags,
   down: deleteMembersAndTags,
 };
@@ -31,9 +25,19 @@ async function createMembersAndTags() {
   await createMemberPermissions();
 }
 
-async function createMembers() {
-  // Members ------------------------------------------------------------------
+async function deleteMembersAndTags() {
+  const directus = await useDirectus();
 
+  await directus.request(deleteCollection("collectivo_members"));
+  await directus.request(deleteCollection("collectivo_tags"));
+  await directus.request(
+    deleteCollection("collectivo_members_collectivo_tags")
+  );
+  await directus.request(deleteCollection("collectivo_members_files_visible"));
+  await directus.request(deleteCollection("collectivo_members_files_hidden"));
+}
+
+async function createMembers() {
   const collection: NestedPartial<DirectusCollection<any>> = {
     collection: "collectivo_members",
     schema: {
@@ -43,9 +47,6 @@ async function createMembers() {
     },
     meta: {
       icon: "switch_account",
-      archive_field: "status",
-      archive_value: "ended",
-      unarchive_value: "draft",
       display_template: "{{first_name}} {{last_name}}",
       // @ts-ignore
       sort: 1,
@@ -151,14 +152,16 @@ async function createMembers() {
         sort: 5,
         options: {
           choices: [
-            { text: "$t:draft", value: "draft" },
-            { text: "$t:archived", value: "archived" },
+            { text: "$t:not-a-member", value: "not-a-member" },
+            { text: "$t:applied", value: "applied" },
+            { text: "$t:member", value: "member" },
+            { text: "$t:ended", value: "ended" },
           ],
         },
         interface: "select-dropdown",
         display: "labels",
       },
-      schema: { default_value: "draft", is_nullable: false },
+      schema: { default_value: "not-a-member", is_nullable: false },
     },
     {
       field: "collectivo_tags",
@@ -437,17 +440,4 @@ async function createMemberPermissions() {
       fields: ["first_name", "last_name", "email", "id", "role"],
     })
   );
-}
-
-async function deleteMembersAndTags() {
-  console.log("Deleting members");
-  const directus = await useDirectus();
-
-  await directus.request(deleteCollection("collectivo_members"));
-  await directus.request(deleteCollection("collectivo_tags"));
-  await directus.request(
-    deleteCollection("collectivo_members_collectivo_tags")
-  );
-  await directus.request(deleteCollection("collectivo_members_files_visible"));
-  await directus.request(deleteCollection("collectivo_members_files_hidden"));
 }

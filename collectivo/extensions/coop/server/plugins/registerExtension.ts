@@ -5,6 +5,7 @@ import m1 from "../migrations/001_members";
 export default defineNitroPlugin((nitroApp) => {
   registerExtension({
     name: "coop",
+    description: pkg.description,
     version: pkg.version,
     migrations: [m1],
   });
