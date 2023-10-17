@@ -12,7 +12,7 @@ export default defineNitroPlugin((nitroApp) => {
     name: "collectivo",
     version: pkg.version,
     //description: pkg.description,
-    migrations: [m1, m2, m3, m4, m5],
+    migrations: [m1, m2, m3, m4],
     demoData: demoData,
   });
 });

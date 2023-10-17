@@ -224,12 +224,41 @@ async function createForms() {
       type: "alias",
       meta: { interface: "list-m2m", special: ["m2m"] },
     },
-    // Permissions
-    // M2M Form Actions
-    // M2A Form sections/fields/etc.
+    {
+      collection: "collectivo_forms",
+      field: "collectivo_action_flow",
+      type: "uuid",
+      meta: {
+        collection: "collectivo_forms",
+        field: "collectivo_action_flow",
+        special: ["m2o"],
+        interface: "select-dropdown-m2o",
+      },
+      schema: {},
+    },
   ];
-
-  await createOrUpdateDirectusCollection(collection, fields);
+  const relations = [
+    {
+      collection: "collectivo_forms",
+      field: "collectivo_action_flow",
+      related_collection: "directus_flows",
+      schema: {
+        on_delete: "SET NULL",
+      },
+      meta: {
+        many_collection: "collectivo_forms",
+        many_field: "collectivo_action_flow",
+        one_collection: "directus_flows",
+        one_field: null,
+        one_collection_field: null,
+        one_allowed_collections: null,
+        junction_field: null,
+        sort_field: null,
+        one_deselect_action: "nullify",
+      },
+    },
+  ];
+  await createOrUpdateDirectusCollection(collection, fields, relations);
 }
 
 async function createFormsPagesRelation() {
