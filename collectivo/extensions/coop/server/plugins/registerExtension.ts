@@ -7,6 +7,5 @@ export default defineNitroPlugin((nitroApp) => {
     name: "coop",
     description: pkg.description,
     version: pkg.version,
-    migrations: [m1],
   });
 });

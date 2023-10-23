@@ -30,7 +30,7 @@ async function getRole(name: string) {
   return membersRoles[0].id;
 }
 
-export default async function demoData() {
+export default async function createExampleData() {
   console.log("Creating demo data for collectivo");
 
   const directus = await useDirectus();

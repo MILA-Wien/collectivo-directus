@@ -1,6 +1,7 @@
 {
   "name": "@collectivo/collectivo",
   "version": "0.0.2",
+  "description": "Collectivo is a module system for community plattforms.",
   "type": "module",
   "license": "AGPL-3.0",
   "author": "Joël Foramitti",
@@ -14,9 +15,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@directus/sdk": "^12.0.0",
+    "@directus/sdk": "^13.0.0",
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "^2.0.18",
+    "compare-versions": "^6.1.0",
     "marked": "^9.1.0",
     "winston": "^3.10.0"
   },

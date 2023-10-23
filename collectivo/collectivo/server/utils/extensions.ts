@@ -1,12 +1,20 @@
-import { CollectivoMigration } from "./migrations";
+// Functions to register extensions and get registered extensions
 
-// Define extension setup function
+import { validateStrict } from "compare-versions";
+
+// Configuration types
+export interface ExtensionDependency {
+  extensionName: string;
+  version: string;
+}
+
 export interface ExtensionConfig {
   name: string;
   description?: string;
   version: string;
-  migrations?: CollectivoMigration[];
-  demoData?: () => Promise<void>;
+  schemas?: ExtensionSchema[];
+  dependencies?: ExtensionDependency[];
+  exampleDataFn?: () => Promise<void>;
 }
 
 // To avoid name conflicts, the following extension names are forbidden
@@ -41,7 +49,7 @@ export function registerExtension(ext: ExtensionConfig) {
   } catch (error) {
     logger.log({
       level: "error",
-      message: `Error registering extension: ${ext.name}`,
+      message: `Error registering extension: ${ext.name} v${ext.version}`,
       error: error,
     });
   }
@@ -53,6 +61,11 @@ function registerExtension_(ext: ExtensionConfig) {
     throw new Error(
       `Extension name '${ext.name}' should not contain underscores`
     );
+  }
+
+  // Validate version string
+  if (!validateStrict(ext.version)) {
+    throw new Error(`Extension version '${ext.version}' is not valid`);
   }
 
   // Check forbidden names

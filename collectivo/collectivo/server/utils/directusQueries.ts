@@ -13,66 +13,40 @@ import {
   DirectusPermission,
   createPermission,
   updatePermission,
+  readPermissions,
+  createRole,
+  DirectusRole,
+  updateRole,
+  updateItem,
+  readItems,
+  createItem,
 } from "@directus/sdk";
-// // Remove old fields
-// if (fieldsToRemove) {
-//   for (const field of fieldsToRemove) {
-//     try {
-//       await directus.request(deleteField(collection.collection, field));
-//       console.log(`Deleted field "${field}"`);
-//     } catch (e) {
-//       console.error(e);
-//       throw new Error("Could not delete field");
-//     }
-//   }
-// }
 
-// Return first role with given name
-export async function getDirectusRoleByName(name: string) {
+async function addItemtoExtension(
+  extension: string,
+  collection: string,
+  item: any
+) {
   const directus = await useDirectus();
-  const roles = await directus.request(
-    readRoles({
-      filter: {
-        name: { _eq: name },
-      },
+  const extsDb = await directus.request(readItems("collectivo_extensions"));
+  const extDb = extsDb.find((ext) => ext.name === extension);
+  if (!extDb) {
+    throw new Error(`Could not find extension "${extension}"`);
+  }
+  await directus.request(
+    createItem("collectivo_extensions_items", {
+      collection: collection,
+      item: item,
+      collectivo_extensions_id: extDb.id,
     })
   );
-  if (roles.length < 1) {
-    throw new Error(`Could not find role "${name}"`);
-  } else if (roles.length > 1) {
-    logger.warning(`Found multiple roles with name "${name}"`);
-  }
-  return roles[0];
 }
-
-// export async function createOrUpdateDirectusPermission(
-//   roleName: string,
-//   permission: NestedPartial<DirectusPermission<any>>
-// ) {
-//   const directus = await useDirectus();
-//   const role = await getDirectusRoleByName(roleName);
-//   try {
-//     await directus.request(
-//       createPermission(permission)
-//     );
-//   } catch (e) {
-//     try {
-//       await directus.request(
-//         updatePermission()
-//       );
-//       console.log(`Updated permission for "${roleName}"`);
-//     } catch (e2) {
-//       console.error(e);
-//       console.error(e2);
-//       throw new Error("Could not create or update permission");
-//     }
-//   }
-// }
 
 export async function createOrUpdateDirectusCollection(
   collection: NestedPartial<DirectusCollection<any>>,
   fields?: NestedPartial<DirectusField<any>>[],
-  relations?: NestedPartial<DirectusRelation<any>>[]
+  relations?: NestedPartial<DirectusRelation<any>>[],
+  extension?: string
 ) {
   if (!collection.collection) {
     throw new Error("Collection name is required");
@@ -80,6 +54,13 @@ export async function createOrUpdateDirectusCollection(
   const directus = await useDirectus();
   try {
     await directus.request(createCollection(collection));
+    if (extension) {
+      await addItemtoExtension(
+        extension,
+        "directus_collections",
+        collection.collection
+      );
+    }
     console.log(`Created collection "${collection.collection}"`);
   } catch (e) {
     try {
@@ -95,11 +76,13 @@ export async function createOrUpdateDirectusCollection(
   }
 
   for (const field of fields ?? []) {
-    await createOrUpdateDirectusField(collection.collection, field);
+    field.collection = collection.collection;
+    await createOrUpdateDirectusField(field);
   }
 
   for (const relation of relations ?? []) {
-    await createOrUpdateDirectusRelation(collection.collection, relation);
+    relation.collection = collection.collection;
+    await createOrUpdateDirectusRelation(relation);
   }
 }
 
@@ -124,28 +107,40 @@ export async function updateDirectusCollection(
   }
 
   for (const field of fields ?? []) {
-    await createOrUpdateDirectusField(collection.collection, field);
+    field.collection = collection.collection;
+    await createOrUpdateDirectusField(field);
   }
 
   for (const relation of relations ?? []) {
-    await createOrUpdateDirectusRelation(collection.collection, relation);
+    relation.collection = collection.collection;
+    await createOrUpdateDirectusRelation(relation);
   }
 }
 
 export async function createOrUpdateDirectusField(
-  collectionName: string,
-  field: NestedPartial<DirectusField<any>>
+  field: NestedPartial<DirectusField<any>>,
+  extension?: string
 ) {
   if (!field.field) {
     throw new Error("Field name is required");
   }
+  if (!field.collection) {
+    throw new Error("Field collection is required");
+  }
   const directus = await useDirectus();
   try {
-    await directus.request(createField(collectionName, field));
+    const fieldDB = await directus.request(
+      createField(field.collection, field)
+    );
+    if (extension) {
+      await addItemtoExtension(extension, "directus_fields", fieldDB.id);
+    }
     console.log(`Created field "${field.field}"`);
   } catch (e) {
     try {
-      await directus.request(updateField(collectionName, field.field, field));
+      await directus.request(
+        updateField(field.collection, field.field, field)
+      );
       console.log(`Updated field "${field.field}"`);
     } catch (e2) {
       console.error(e);
@@ -155,10 +150,30 @@ export async function createOrUpdateDirectusField(
   }
 }
 
+// Return first role with given name
+export async function getDirectusRoleByName(name: string) {
+  const directus = await useDirectus();
+  const roles = await directus.request(
+    readRoles({
+      filter: {
+        name: { _eq: name },
+      },
+    })
+  );
+  if (roles.length < 1) {
+    throw new Error(`Could not find role "${name}"`);
+  } else if (roles.length > 1) {
+    logger.warning(`Found multiple roles with name "${name}"`);
+  }
+  return roles[0];
+}
+
 export async function createOrUpdateDirectusRelation(
-  collectionName: string,
   relation: NestedPartial<DirectusRelation<any>>
 ) {
+  if (!relation.collection) {
+    throw new Error("Relation collection is required");
+  }
   if (!relation.field) {
     throw new Error("Relation name is required");
   }
@@ -169,7 +184,7 @@ export async function createOrUpdateDirectusRelation(
   } catch (e) {
     try {
       await directus.request(
-        updateRelation(collectionName, relation.field, relation)
+        updateRelation(relation.collection, relation.field, relation)
       );
       console.log(`Updated relation "${relation.field}"`);
     } catch (e2) {
@@ -179,3 +194,58 @@ export async function createOrUpdateDirectusRelation(
     }
   }
 }
+
+export async function createOrUpdateDirectusRole(
+  role: NestedPartial<DirectusRole<any>>
+) {
+  if (!role.name) {
+    throw new Error("Role name is required");
+  }
+  const directus = await useDirectus();
+  try {
+    const roleDb = await getDirectusRoleByName(role.name);
+    await directus.request(updateRole(roleDb.ID, role));
+  } catch (e) {
+    await directus.request(createRole(role));
+    console.log(`Created role "${role}"`);
+  }
+}
+
+// export async function createOrUpdateDirectusPermission(
+//   permission: NestedPartial<DirectusPermission<any>>
+// ) {
+//   const directus = await useDirectus();
+//   if (permission.roleName) {
+//     const role = await getDirectusRoleByName(permission.roleName);
+//     permission.role = role.ID;
+//   } else if (!permission.role) {
+//     throw new Error("role or roleName is required");
+//   }
+
+//   try {
+//     await directus.request(readPermissions({ filter: { role: permission.role, collection: permission.collection, action: permission.action } })
+
+//   } catch (e) {
+//     try {
+//       await directus.request(updatePermission(permission.role, permission));
+//       console.log(`Updated permission for "${roleName}"`);
+//     } catch (e2) {
+//       console.error(e);
+//       console.error(e2);
+//       throw new Error("Could not create or update permission");
+//     }
+//   }
+// }
+
+// // Remove old fields
+// if (fieldsToRemove) {
+//   for (const field of fieldsToRemove) {
+//     try {
+//       await directus.request(deleteField(collection.collection, field));
+//       console.log(`Deleted field "${field}"`);
+//     } catch (e) {
+//       console.error(e);
+//       throw new Error("Could not delete field");
+//     }
+//   }
+// }
