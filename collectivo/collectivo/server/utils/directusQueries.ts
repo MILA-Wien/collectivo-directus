@@ -135,41 +135,24 @@ export async function createOrUpdateDirectusField(
     if (extension) {
       await addItemtoExtension(extension, "directus_fields", fieldDB.id);
     }
-    console.log(`Created field "${field.field}"`);
+    console.log(`Created field "${field.field} in "${field.collection}"`);
   } catch (e) {
     try {
       await directus.request(
         updateField(field.collection, field.field, field)
       );
-      console.log(`Updated field "${field.field}"`);
+      console.log(`Updated field "${field.field} in "${field.collection}""`);
     } catch (e2) {
       console.error(e);
       console.error(e2);
-      throw new Error("Could not create or update field");
+      throw new Error(`Could not create or update field ${field.field}`);
     }
   }
 }
 
-// Return first role with given name
-export async function getDirectusRoleByName(name: string) {
-  const directus = await useDirectus();
-  const roles = await directus.request(
-    readRoles({
-      filter: {
-        name: { _eq: name },
-      },
-    })
-  );
-  if (roles.length < 1) {
-    throw new Error(`Could not find role "${name}"`);
-  } else if (roles.length > 1) {
-    logger.warning(`Found multiple roles with name "${name}"`);
-  }
-  return roles[0];
-}
-
 export async function createOrUpdateDirectusRelation(
-  relation: NestedPartial<DirectusRelation<any>>
+  relation: NestedPartial<DirectusRelation<any>>,
+  extension?: string
 ) {
   if (!relation.collection) {
     throw new Error("Relation collection is required");
@@ -195,47 +178,81 @@ export async function createOrUpdateDirectusRelation(
   }
 }
 
+// Return first role with given name
+export async function getDirectusRoleByName(name: string) {
+  const directus = await useDirectus();
+  const roles = await directus.request(
+    readRoles({
+      filter: {
+        name: { _eq: name },
+      },
+    })
+  );
+  if (roles.length < 1) {
+    throw new Error(`Could not find role "${name}"`);
+  } else if (roles.length > 1) {
+    logger.warn(`Found multiple roles with name "${name}"`);
+  }
+  return roles[0];
+}
+
 export async function createOrUpdateDirectusRole(
-  role: NestedPartial<DirectusRole<any>>
+  role: NestedPartial<DirectusRole<any>>,
+  extension?: string
 ) {
   if (!role.name) {
     throw new Error("Role name is required");
   }
   const directus = await useDirectus();
+  var roleDb;
   try {
-    const roleDb = await getDirectusRoleByName(role.name);
-    await directus.request(updateRole(roleDb.ID, role));
+    roleDb = await getDirectusRoleByName(role.name);
   } catch (e) {
     await directus.request(createRole(role));
     console.log(`Created role "${role}"`);
   }
+  // TODO: Updating role not possible yet
+  // if (roleDb) {
+  //   console.log(roleDb);
+  //   console.log(role);
+  //   await directus.request(updateRole(roleDb.ID, role));
+  //   console.log(`Updated role "${role}"`);
+  // }
 }
 
-// export async function createOrUpdateDirectusPermission(
-//   permission: NestedPartial<DirectusPermission<any>>
-// ) {
-//   const directus = await useDirectus();
-//   if (permission.roleName) {
-//     const role = await getDirectusRoleByName(permission.roleName);
-//     permission.role = role.ID;
-//   } else if (!permission.role) {
-//     throw new Error("role or roleName is required");
-//   }
+export async function createOrUpdateDirectusPermission(
+  permission: NestedPartial<DirectusPermission<any>>,
+  extension?: string
+) {
+  const directus = await useDirectus();
+  if (permission.roleName) {
+    const role = await getDirectusRoleByName(permission.roleName);
+    permission.role = role.id;
+  } else if (!permission.role) {
+    throw new Error("role or roleName is required");
+  }
 
-//   try {
-//     await directus.request(readPermissions({ filter: { role: permission.role, collection: permission.collection, action: permission.action } })
-
-//   } catch (e) {
-//     try {
-//       await directus.request(updatePermission(permission.role, permission));
-//       console.log(`Updated permission for "${roleName}"`);
-//     } catch (e2) {
-//       console.error(e);
-//       console.error(e2);
-//       throw new Error("Could not create or update permission");
-//     }
-//   }
-// }
+  // Try to get role
+  const roles = await directus.request(
+    readPermissions({
+      filter: {
+        role: { _eq: permission.role },
+        action: { _eq: permission.action },
+        collection: { _eq: permission.collection },
+      },
+    })
+  );
+  if (roles.length > 1) {
+    logger.warn(
+      `Found multiple permissions for role "${permission.roleName}" with action "${permission.action}" on collection "${permission.collection}"`
+    );
+  }
+  if (roles.length == 0) {
+    await directus.request(createPermission(permission));
+  } else {
+    await directus.request(updatePermission(roles[0].id, permission));
+  }
+}
 
 // // Remove old fields
 // if (fieldsToRemove) {

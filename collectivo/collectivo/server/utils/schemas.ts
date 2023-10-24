@@ -127,10 +127,13 @@ async function applySchema(schema: ExtensionSchema, extension?: string) {
     await createOrUpdateDirectusField(field, extension);
   }
   for (const relation of schema.relations) {
-    await createOrUpdateDirectusRelation(relation);
+    await createOrUpdateDirectusRelation(relation, extension);
   }
   for (const role of schema.roles) {
-    await createOrUpdateDirectusRole(role);
+    await createOrUpdateDirectusRole(role, extension);
+  }
+  for (const permission of schema.permissions) {
+    await createOrUpdateDirectusPermission(permission, extension);
   }
 }
 
@@ -167,72 +170,4 @@ async function getExtensionsFromDb(): Promise<Record<string, any>[]> {
     }
   }
   return Promise.resolve([]);
-}
-
-export async function createDirectusM2ARelation(
-  schema: ExtensionSchema,
-  aliasFieldName: string,
-  MCollection: string,
-  ACollections: string[],
-  aliasField?: NestedPartial<DirectusField<any>>
-) {
-  const m2aCollection = `${MCollection}_${aliasFieldName}`;
-  const m2aCollectionIdFieldName = `${MCollection}_id`;
-  const field = aliasField || {
-    field: aliasFieldName,
-    type: "alias",
-    meta: { interface: "list-m2a", special: ["m2a"] },
-    collection: MCollection,
-  };
-  schema.fields.push(field);
-  schema.collections.push({
-    collection: m2aCollection,
-    meta: { hidden: true, icon: "import_export" },
-    schema: { schema: m2aCollection, name: m2aCollection, comment: null },
-  });
-  schema.fields.push({
-    collection: m2aCollection,
-    field: m2aCollectionIdFieldName,
-    type: "integer",
-    meta: { hidden: true },
-  });
-  schema.fields.push({
-    collection: m2aCollection,
-    field: "item",
-    type: "string",
-    schema: {},
-    meta: { hidden: true },
-  });
-  schema.fields.push({
-    collection: m2aCollection,
-    field: "collection",
-    type: "string",
-    schema: {},
-    meta: { hidden: true },
-  });
-  schema.relations.push({
-    collection: m2aCollection,
-    field: "item",
-    meta: {
-      one_field: null,
-      sort_field: null,
-      one_deselect_action: "nullify",
-      // @ts-ignore
-      one_allowed_collections: ACollections,
-      one_collection_field: "collection",
-      junction_field: m2aCollectionIdFieldName,
-    },
-  });
-  schema.relations.push({
-    collection: m2aCollection,
-    field: m2aCollectionIdFieldName,
-    related_collection: MCollection,
-    meta: {
-      one_field: aliasFieldName,
-      sort_field: null,
-      one_deselect_action: "nullify",
-      junction_field: "item",
-    },
-    schema: { on_delete: "SET NULL" },
-  });
 }

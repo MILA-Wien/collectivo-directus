@@ -111,7 +111,7 @@ schema.fields = [
   },
 ];
 
-createDirectusM2ARelation(
+directusM2ARelation(
   schema,
   "items",
   "collectivo_extensions",
