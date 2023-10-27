@@ -5,6 +5,7 @@ import rolesSchema from "../schema/roles";
 import settingsSchema from "../schema/settings";
 import tilesSchema from "../schema/tiles";
 import tagsSchema from "../schema/tags";
+import messagesSchema from "../schema/messages";
 
 import createExampleData from "../exampleData/createExampleData";
 
@@ -19,6 +20,7 @@ export default defineNitroPlugin((nitroApp) => {
       settingsSchema,
       tilesSchema,
       tagsSchema,
+      messagesSchema,
     ],
     exampleDataFn: createExampleData,
   });

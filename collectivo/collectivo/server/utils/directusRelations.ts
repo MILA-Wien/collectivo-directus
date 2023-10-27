@@ -1,9 +1,31 @@
 import { DirectusField, NestedPartial } from "@directus/sdk";
 
+export async function directusO2MRelation(
+  schema: ExtensionSchema,
+  CollectionOne: string,
+  CollectionMany: string,
+  ForeignKey: string
+) {
+  schema.fields.push({
+    collection: CollectionOne,
+    field: ForeignKey,
+    type: "integer",
+    schema: {},
+    meta: { interface: "select-dropdown-m2o", special: ["m2o"] },
+  });
+  schema.relations.push({
+    collection: CollectionOne,
+    field: ForeignKey,
+    related_collection: CollectionMany,
+    meta: { sort_field: null },
+    schema: { on_delete: "SET NULL" },
+  });
+}
+
 interface M2MSettings {
   Collection1IsUUID?: boolean;
   Collection2IsUUID?: boolean;
-  createField2?: boolean;
+  createField2?: boolean; // default true
   field1?: NestedPartial<DirectusField<any>>;
   field2?: NestedPartial<DirectusField<any>>;
 }

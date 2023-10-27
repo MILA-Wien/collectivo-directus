@@ -33,6 +33,12 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "migration",
   "description",
   "status",
+  "messages",
+  "api",
+  "tiles",
+  "taqs",
+  "extensions",
+  "settings",
 ];
 
 // Store for registered extension configs
