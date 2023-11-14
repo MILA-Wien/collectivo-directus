@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@collectivo/collectivo": "workspace:*",
-    "@collectivo/coop": "workspace:*",
+    "@collectivo/memberships": "workspace:*",
     "collectivo_mila": "workspace:*"
   },
   "devDependencies": {

@@ -31,7 +31,7 @@ async function getRole(name: string) {
 }
 
 export default async function createExampleData() {
-  console.log("Creating demo data for collectivo");
+  console.log("Creating example data for collectivo");
 
   const directus = await useDirectus();
 
@@ -87,7 +87,7 @@ export default async function createExampleData() {
         userID = us.id;
       }
       directus.request(
-        createItem("collectivo_members", {
+        createItem("collectivo_users", {
           first_name: user.first_name,
           last_name: user.last_name,
           email: user.email,
@@ -113,11 +113,11 @@ export default async function createExampleData() {
   // Add some members to some tags
   console.log("Creating tag-member relations");
   for (var i = 0; i < 3; i++) {
-    tags[i].collectivo_members = {
+    tags[i].collectivo_users = {
       create: [
-        { collectivo_tags_id: "+", collectivo_members_id: { id: 1 } },
-        { collectivo_tags_id: "+", collectivo_members_id: { id: 2 } },
-        { collectivo_tags_id: "+", collectivo_members_id: { id: 3 } },
+        { collectivo_tags_id: "+", collectivo_users_id: { id: 1 } },
+        { collectivo_tags_id: "+", collectivo_users_id: { id: 2 } },
+        { collectivo_tags_id: "+", collectivo_users_id: { id: 3 } },
       ],
     };
   }
@@ -144,6 +144,4 @@ export default async function createExampleData() {
   } catch (error) {
     console.log(error);
   }
-
-  console.log("Creating demo data for collectivo succeeded");
 }

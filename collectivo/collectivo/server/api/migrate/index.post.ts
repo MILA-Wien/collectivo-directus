@@ -6,52 +6,45 @@ export default defineEventHandler(async (event) => {
 
   // Read parameters
   const query = getQuery(event);
-  const extParam = query["ext"];
-  var toParam = query["to"];
-  const createDemoData = parseBoolean(query["demo"], false);
-  if (!extParam) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Missing parameter 'ext'",
-    });
-  }
-  if (toParam && isNaN(Number(toParam))) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Parameter 'to' must be a number",
-    });
-  } else {
-    toParam = Number(toParam);
-  }
+  const extension = query["extension"];
+  const migrateAll = parseBoolean(query["all"], false);
+  const force = parseBoolean(query["force"], false);
+  const down = parseBoolean(query["down"], false);
+  const version = query["version"] as string;
+  const exampleData = parseBoolean(query["exampleData"], false);
 
   // Get extension configs
   const exts = getRegisteredExtensions();
 
-  // Case 1: Migrate all extensions
-  if (extParam == "all") {
-    if (toParam) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Parameter 'to' is not possible when migrating all",
-      });
+  if (migrateAll) {
+    // Migrate all extensions
+    for (const ext of exts) {
+      migrateExtension(ext, version, exampleData);
     }
-    runAllMigrations(exts, createDemoData);
     return {
-      detail: "Running all migrations",
+      detail: "Running migrations for all extensions",
     };
   }
 
-  // Case 2: Migrate a specific extension
-  const ext = exts.find((f: any) => f.name === extParam);
+  // Migrate a specific extension
+  const ext = exts.find((f: any) => f.name === extension);
   if (!ext) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Cannot find extension with name " + extParam,
+      statusMessage: "Cannot find extension with name " + extension,
     });
   }
-  runMigrations(ext, toParam as number | undefined);
 
+  if (force) {
+    migrateCustom(ext, version, down, exampleData);
+    const direction = down ? "down" : "up";
+    return {
+      detail: `Running forced migration ${version} (${direction}) of ${ext.name}`,
+    };
+  }
+
+  migrateExtension(ext, version, exampleData);
   return {
-    detail: "Running migrations for extension " + extParam,
+    detail: "Running migrations for extension " + extension,
   };
 });

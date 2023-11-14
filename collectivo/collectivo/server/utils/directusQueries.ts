@@ -22,6 +22,9 @@ import {
   createItem,
   DirectusTranslation,
   createTranslation,
+  readTranslation,
+  updateTranslation,
+  readTranslations,
 } from "@directus/sdk";
 
 async function addItemtoExtension(
@@ -218,6 +221,27 @@ export async function createOrUpdateDirectusRole(
   // }
 }
 
+export async function createOrUpdateDirectusTranslation(
+  translation: NestedPartial<DirectusTranslation<any>>
+) {
+  const directus = await useDirectus();
+  const tr = await directus.request(
+    readTranslations({
+      filter: {
+        language: { _eq: translation.language },
+        key: { _eq: translation.key },
+      },
+    })
+  );
+  if (tr.length === 0) {
+    await directus.request(createTranslation(translation));
+  } else {
+    await directus.request(
+      updateTranslation(tr[0].id, { value: translation.value })
+    );
+  }
+}
+
 export async function createOrUpdateDirectusPermission(
   permission: NestedPartial<DirectusPermission<any>>,
   extension?: string
@@ -250,13 +274,6 @@ export async function createOrUpdateDirectusPermission(
   } else {
     await directus.request(updatePermission(roles[0].id, permission));
   }
-}
-
-export async function createOrUpdateDirectusTranslation(
-  translation: NestedPartial<DirectusTranslation<any>>
-) {
-  const directus = await useDirectus();
-  await directus.request(createTranslation(translation));
 }
 
 // // Remove old fields

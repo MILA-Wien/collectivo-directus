@@ -37,6 +37,7 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "directus",
   "sort",
   "user",
+  "users",
   "date",
   "email",
   "content",
@@ -51,7 +52,9 @@ const FORBIDDEN_EXTENSION_NAMES = [
   "messages",
   "api",
   "tiles",
-  "taqs",
+  "type",
+  "subtype",
+  "tags",
   "extensions",
   "settings",
 ];

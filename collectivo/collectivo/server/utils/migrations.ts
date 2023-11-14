@@ -36,52 +36,16 @@ export function createMigration(
   } as CollectivoMigration;
 }
 
-// Run specific migration for an extension, regardless of db state
-export async function migrateCustom(
-  ext: ExtensionConfig,
-  version: string,
-  down?: boolean
-) {
-  const direction = down ? "down" : "up";
-  logger.info(
-    `Forced migration ${version} (${direction}) of ${ext.name} starting`
-  );
-  if (!ext.migrations) {
-    throw new Error(`Migration ${version} of ${ext.name} not found`);
-  }
-
-  const migration = ext.migrations.find((f) => f.version === version);
-  if (!migration) {
-    throw new Error(`Migration ${version} of ${ext.name} not found`);
-  }
-  try {
-    if (down) {
-      await migration.down();
-    } else {
-      console.log("running up");
-      await migration.up();
-    }
-  } catch (e) {
-    logger.error(
-      `Error running forced migration ${version} (down=${down}) of ${ext.name}`
-    );
-    throw e;
-  }
-  logger.info(
-    `Forced migration ${version} (${direction}) of ${ext.name} successful`
-  );
-}
-
 // Run pending migrations for a set of extensions, based on db state
 export async function migrateAll(
   exts: ExtensionConfig[],
-  createDemoData: boolean = false
+  createExampleData: boolean = false
 ) {
   const extsDb = await getExtensionsFromDb();
   for (const ext of exts) {
     await runMigrations(ext, extsDb);
   }
-  if (createDemoData) {
+  if (createExampleData) {
     for (const ext of exts) {
       if (ext.exampleDataFn) {
         await ext.exampleDataFn();
@@ -93,10 +57,18 @@ export async function migrateAll(
 // Run migrations for an extension up to a specified target version
 export async function migrateExtension(
   ext: ExtensionConfig,
-  to?: string // Target migration version. If not specified, to latest.
+  to?: string, // Target migration version. If not specified, to latest.
+  createExampleData: boolean = false
 ) {
   const extsDb = await getExtensionsFromDb();
   await runMigrations(ext, extsDb, to);
+  console.log("createExampleData", createExampleData);
+  if (createExampleData) {
+    console.log("createExampleData2", createExampleData);
+    if (ext.exampleDataFn) {
+      await ext.exampleDataFn();
+    }
+  }
 }
 
 // Get current state of extensions from the database
@@ -140,6 +112,50 @@ async function getExtensionsFromDb() {
     }
     return extensions;
   }
+}
+
+// Run specific migration for an extension, regardless of db state
+export async function migrateCustom(
+  ext: ExtensionConfig,
+  version: string,
+  down?: boolean,
+  createExampleData: boolean = false
+) {
+  const direction = down ? "down" : "up";
+  logger.info(
+    `Forced migration ${version} (${direction}) of ${ext.name} starting`
+  );
+  if (!ext.migrations) {
+    throw new Error(`Migration ${version} of ${ext.name} not found`);
+  }
+
+  const migration = ext.migrations.find((f) => f.version === version);
+  if (!migration) {
+    throw new Error(`Migration ${version} of ${ext.name} not found`);
+  }
+  try {
+    if (down) {
+      await migration.down();
+    } else {
+      await migration.up();
+    }
+  } catch (e) {
+    logger.error(
+      `Error running forced migration v${version} (${direction}) of extension '${ext.name}'`
+    );
+    throw e;
+  }
+
+  logger.info(
+    `Forced migration v${version} (${direction}) of extension '${ext.name}' successful`
+  );
+
+  if (createExampleData) {
+    if (ext.exampleDataFn) {
+      await ext.exampleDataFn();
+    }
+  }
+  logger.info(`Creating example data of extension '${ext.name}' successful`);
 }
 
 async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
@@ -196,24 +212,15 @@ async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
     `Migrating ${ext.name} from ${migrationState} to ${migrationTarget}`
   );
 
-  console.log("Migration state index: " + migrationStateIndex);
-  console.log("Migration target index: " + migrationTargetIndex);
-
   if (migrationStateIndex < migrationTargetIndex) {
-    console.log("running up");
     for (const migration of ext.migrations.slice(
       migrationStateIndex + 1,
       migrationTargetIndex + 1
     )) {
       try {
-        // checkDependencies(migration, extsDb);
+        // TODO: checkDependencies(migration, extsDb);
         await migration.up();
         migrationStateIndex++;
-        console.log("Migration state index: " + migrationStateIndex);
-        console.log(
-          "Migration state ",
-          ext.migrations[migrationStateIndex].version
-        );
         await directus.request(
           updateItem("collectivo_extensions", extensionDb.id, {
             migration: ext.migrations[migrationStateIndex].version,
@@ -221,7 +228,7 @@ async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
         );
       } catch (e) {
         logger.error(
-          `Error running migration ${migrationState} of ${ext.name}`
+          `Error running migration ${ext.migrations[migrationStateIndex].version} of ${ext.name}`
         );
         throw e;
       }
@@ -235,12 +242,12 @@ async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
         migrationStateIndex--;
         await directus.request(
           updateItem("collectivo_extensions", extensionDb.id, {
-            migration: migrationState,
+            migration: ext.migrations[migrationStateIndex].version,
           })
         );
       } catch (e) {
         logger.error(
-          `Error running migration ${migrationState} of ${ext.name}`
+          `Error running migration ${ext.migrations[migrationStateIndex].version} of ${ext.name}`
         );
         throw e;
       }

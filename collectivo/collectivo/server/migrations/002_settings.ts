@@ -14,11 +14,6 @@ const schema = initSchema();
 schema.collections = [
   {
     collection: "collectivo_settings",
-    schema: {
-      schema: "schema",
-      name: "schema",
-      comment: null,
-    },
     meta: {
       icon: "settings",
       sort: 1000,
@@ -35,6 +30,34 @@ schema.collections = [
           translation: "Einstellungen",
           singular: "Einstellungen",
           plural: "Einstellungen",
+        },
+      ],
+    },
+  },
+  {
+    collection: "collectivo_settings_general",
+    schema: {
+      schema: "schema",
+      name: "schema",
+      comment: null,
+    },
+    meta: {
+      icon: "settings",
+      sort: 1,
+      group: "collectivo_settings",
+      singleton: true,
+      translations: [
+        {
+          language: "en-US",
+          translation: "Project settings",
+          singular: "Project settings",
+          plural: "Project settings",
+        },
+        {
+          language: "de-DE",
+          translation: "Projekteinstellungen",
+          singular: "Projekteinstellungen",
+          plural: "Projekteinstellungen",
         },
       ],
     },
