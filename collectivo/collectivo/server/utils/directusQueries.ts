@@ -20,6 +20,8 @@ import {
   updateItem,
   readItems,
   createItem,
+  DirectusTranslation,
+  createTranslation,
 } from "@directus/sdk";
 
 async function addItemtoExtension(
@@ -97,9 +99,7 @@ export async function updateDirectusCollection(
   const directus = await useDirectus();
 
   try {
-    await directus.request(
-      updateCollection(collection.collection, collection)
-    );
+    await directus.request(updateCollection(collection.collection, collection));
     console.log(`Updated collection "${collection.collection}"`);
   } catch (e2) {
     console.error(e2);
@@ -138,9 +138,7 @@ export async function createOrUpdateDirectusField(
     console.log(`Created field "${field.field} in "${field.collection}"`);
   } catch (e) {
     try {
-      await directus.request(
-        updateField(field.collection, field.field, field)
-      );
+      await directus.request(updateField(field.collection, field.field, field));
       console.log(`Updated field "${field.field} in "${field.collection}""`);
     } catch (e2) {
       console.error(e);
@@ -252,6 +250,13 @@ export async function createOrUpdateDirectusPermission(
   } else {
     await directus.request(updatePermission(roles[0].id, permission));
   }
+}
+
+export async function createOrUpdateDirectusTranslation(
+  translation: NestedPartial<DirectusTranslation<any>>
+) {
+  const directus = await useDirectus();
+  await directus.request(createTranslation(translation));
 }
 
 // // Remove old fields

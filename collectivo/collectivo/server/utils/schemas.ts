@@ -25,6 +25,7 @@ export interface ExtensionSchema {
   permissions: NestedPartial<DirectusPermission<any>>[];
   flows: NestedPartial<DirectusFlow<any>>[];
   operations: NestedPartial<DirectusOperation<any>>[];
+  translations: any[];
   custom: (() => Promise<void>)[];
 }
 
@@ -37,6 +38,7 @@ export function initSchema(): ExtensionSchema {
     permissions: [],
     flows: [],
     operations: [],
+    translations: [],
     custom: [],
   } as ExtensionSchema;
 }
@@ -51,30 +53,10 @@ export function combineSchemas(...schemas: ExtensionSchema[]) {
     combinedSchema.permissions.push(...schema.permissions);
     combinedSchema.flows.push(...schema.flows);
     combinedSchema.operations.push(...schema.operations);
+    combinedSchema.translations.push(...schema.translations);
     combinedSchema.custom.push(...schema.custom);
   }
   return combinedSchema;
-}
-
-// Apply extension configs to db
-export async function applyExtensionConfigs(
-  exts: ExtensionConfig[],
-  force?: boolean,
-  createExampleData?: boolean
-) {
-  const extsDb = await getExtensionsFromDb();
-  for (const ext of exts) {
-    await applyExtensionConfig(ext, extsDb, force);
-  }
-  if (createExampleData) {
-    logger.info("Creating example data");
-    for (const ext of exts) {
-      if (ext.exampleDataFn) {
-        await ext.exampleDataFn();
-      }
-    }
-  }
-  logger.info("All schemas applied successfully");
 }
 
 // Run the actual schema migration
@@ -97,41 +79,7 @@ export async function applySchema(schema: ExtensionSchema, extension?: string) {
   for (const permission of schema.permissions) {
     await createOrUpdateDirectusPermission(permission, extension);
   }
+  for (const translation of schema.translations) {
+    await createOrUpdateDirectusTranslation(translation);
+  }
 }
-
-// TODO: REMOVE
-
-// Check if an extensions dependencies are met
-// function checkDependencies(ext: ExtensionConfig, extsDb: any[]): void {
-//   if (!ext.dependencies) return;
-//   for (const dep of ext.dependencies) {
-//     const depDb = extsDb.find((f) => f.name === dep.extensionName);
-//     if (!depDb || compareVersions(ext.version, depDb.version) >= 0) {
-//       throw new Error(
-//         `Dependency not met: ${dep.extensionName} must be at version ${dep.version}`
-//       );
-//     }
-//   }
-// }
-
-// Load extensions from db or setup extension schema if it does not exist
-// async function getExtensionsFromDb(): Promise<Record<string, any>[]> {
-//   const directus = await useDirectus();
-//   try {
-//     const extensions = await directus.request(
-//       readItems("collectivo_extensions")
-//     );
-//     return extensions;
-//   } catch (e) {
-//     try {
-//       // Apply extension schema if not found
-//       await applySchema(ExtensionsSchema);
-//       // TODO: add extension collection to collectivo extension
-//     } catch (e2) {
-//       logger.error(e);
-//       logger.error(e2);
-//       throw Error("Error reading extensions from db");
-//     }
-//   }
-//   return Promise.resolve([]);
-// }
