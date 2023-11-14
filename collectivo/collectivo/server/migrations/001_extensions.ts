@@ -1,4 +1,3 @@
-import { CollectivoMigration } from "../utils/migrations";
 import {
   createFolder,
   deleteCollection,
@@ -7,23 +6,21 @@ import {
   NestedPartial,
 } from "@directus/sdk";
 
-const migration: CollectivoMigration = {
-  id: 1,
-  name: "001_extensions",
-  up: createExtensions,
-  down: deleteExtensions,
-};
-
+const migration = createMigration("collectivo", "0.0.1", up, down);
 export default migration;
 
-async function deleteExtensions() {
-  const directus = await useDirectus();
-  await directus.request(deleteCollection("collectivo_extensions"));
+async function up() {
+  applySchema(schema);
 }
 
-async function createExtensions() {
-  // Extensions ---------------------------------------------------------------
-  const collection: NestedPartial<DirectusCollection<any>> = {
+async function down() {
+  // unapplySchema(schema);
+}
+
+const schema = initSchema();
+
+schema.collections = [
+  {
     collection: "collectivo_extensions",
     schema: {
       schema: "schema",
@@ -31,7 +28,6 @@ async function createExtensions() {
       comment: null,
     },
     meta: {
-      // @ts-ignore
       sort: 90,
       icon: "extension",
       translations: [
@@ -49,91 +45,123 @@ async function createExtensions() {
         },
       ],
     },
-  };
+  },
+];
 
-  const fields: NestedPartial<DirectusField<any>>[] = [
-    {
-      field: "name",
-      type: "string",
-      schema: { is_unique: true, is_nullable: false },
-      meta: {
-        required: true,
-        width: "half",
-        sort: 1,
-        translations: [
-          { language: "en-US", translation: "Name" },
-          { language: "de-DE", translation: "Name" },
-        ],
-        note: "Name of the extension (should not contain underscores)",
-      },
+schema.fields = [
+  {
+    collection: "collectivo_extensions",
+    field: "name",
+    type: "string",
+    schema: { is_unique: true, is_nullable: false },
+    meta: {
+      required: true,
+      readonly: true,
+      width: "half",
+      sort: 1,
+      translations: [
+        { language: "en-US", translation: "Name" },
+        { language: "de-DE", translation: "Name" },
+      ],
     },
-    {
-      field: "status",
-      type: "string",
-      meta: {
-        width: "half",
-        sort: 2,
-        options: {
-          choices: [
-            { text: "$t:active", value: "active" },
-            { text: "$t:disabled", value: "disabled" },
-          ],
-        },
-        interface: "select-dropdown",
-        display: "labels",
-        display_options: {
-          showAsDot: true,
-          choices: [
-            {
-              text: "$t:active",
-              value: "active",
-              foreground: "#FFFFFF",
-              background: "var(--primary)",
-            },
-            {
-              text: "$t:disabled",
-              value: "disabled",
-              foreground: "#18222F",
-              background: "#D3DAE4",
-            },
-          ],
-        },
-        translations: [
-          { language: "en-US", translation: "Status" },
-          { language: "de-DE", translation: "Status" },
+  },
+  {
+    collection: "collectivo_extensions",
+    field: "status",
+    type: "string",
+    meta: {
+      width: "half",
+      readonly: true, // Remove this once there is a way to deactivate exts
+      sort: 2,
+      options: {
+        choices: [
+          { text: "$t:active", value: "active" },
+          { text: "$t:disabled", value: "disabled" },
         ],
       },
-      schema: { default_value: "active", is_nullable: false },
-    },
-    {
-      field: "version",
-      type: "string",
-      meta: {
-        translations: [
-          { language: "en-US", translation: "Version" },
-          { language: "de-DE", translation: "Version" },
+      interface: "select-dropdown",
+      display: "labels",
+      display_options: {
+        choices: [
+          {
+            text: "$t:active",
+            value: "active",
+            foreground: "#FFFFFF",
+            background: "#26A269",
+          },
+          {
+            text: "$t:disabled",
+            value: "disabled",
+            foreground: "#18222F",
+            background: "#D3DAE4",
+          },
         ],
-        required: true,
-        sort: 4,
-        note: "Semantic version of the extension (e.g. 1.0.0)",
       },
+      translations: [
+        { language: "en-US", translation: "Status" },
+        { language: "de-DE", translation: "Status" },
+      ],
     },
-    {
-      field: "migration_state",
-      type: "integer",
-      schema: { default_value: "0" },
-      meta: {
-        translations: [
-          { language: "en-US", translation: "Migration state" },
-          { language: "de-DE", translation: "Migrationslevel" },
-        ],
-        options: { iconLeft: "database" },
-        sort: 5,
-        note: "The number of applied migrations",
-      },
-      collection: "extensions",
+    schema: { default_value: "active", is_nullable: false },
+  },
+  {
+    collection: "collectivo_extensions",
+    field: "version",
+    type: "string",
+    meta: {
+      translations: [
+        { language: "en-US", translation: "Version" },
+        { language: "de-DE", translation: "Version" },
+      ],
+      required: true,
+      readonly: true,
+      sort: 4,
+      note: "Semantic version of the extension (e.g. 1.0.0)",
     },
-  ];
+  },
+  {
+    collection: "collectivo_extensions",
+    field: "migration",
+    type: "string",
+    meta: {
+      translations: [
+        { language: "en-US", translation: "Migration" },
+        { language: "de-DE", translation: "Migration" },
+      ],
+      required: true,
+      readonly: true,
+      sort: 4,
+      note: "Semantic version of the extensions latest migration (e.g. 1.0.0)",
+    },
+  },
+];
 
-  await createOrUpdateDirectusCollection(collection, fields);
-}
+directusM2ARelation(
+  schema,
+  "items",
+  "collectivo_extensions",
+  ["directus_fields", "directus_collections"],
+  {
+    collection: "collectivo_extensions",
+    field: "items",
+    type: "alias",
+    meta: {
+      id: 13,
+      collection: "collectivo_extensions",
+      field: "items",
+      special: ["m2a"],
+      interface: "list-m2a",
+      options: { enableSelect: false, enableCreate: false },
+      display: "related-values",
+      display_options: {
+        template: "{{collection}}",
+      },
+      readonly: true,
+      hidden: false,
+      translations: [
+        { language: "en-US", translation: "Items" },
+        { language: "de-DE", translation: "Einträge" },
+      ],
+    },
+  }
+);

@@ -1,11 +1,11 @@
 import pkg from "../../package.json";
 
-import extensionsSchema from "../schema/extensions";
-import rolesSchema from "../schema/roles";
-import settingsSchema from "../schema/settings";
-import tilesSchema from "../schema/tiles";
-import tagsSchema from "../schema/tags";
-import messagesSchema from "../schema/messages";
+import m001_extensions from "../migrations/001_extensions";
+// import rolesSchema from "../schema/roles";
+// import settingsSchema from "../schema/settings";
+// import tilesSchema from "../schema/tiles";
+// import tagsSchema from "../schema/tags";
+// import messagesSchema from "../schema/messages";
 
 import createExampleData from "../exampleData/createExampleData";
 
@@ -14,14 +14,7 @@ export default defineNitroPlugin((nitroApp) => {
   registerExtension({
     name: "collectivo",
     version: pkg.version,
-    schemas: [
-      extensionsSchema,
-      rolesSchema,
-      settingsSchema,
-      tilesSchema,
-      tagsSchema,
-      messagesSchema,
-    ],
+    migrations: [m001_extensions],
     exampleDataFn: createExampleData,
   });
 });
