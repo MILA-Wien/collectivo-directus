@@ -1,5 +1,5 @@
 {
-  "name": "@collectivo/dev_app",
+  "name": "@collectivo/app",
   "private": true,
   "scripts": {
     "build": "nuxt build",

@@ -1,3 +1,14 @@
+const migration = createMigration("collectivo", "0.0.3", up, down);
+export default migration;
+
+async function up() {
+  await applySchema(schema);
+}
+
+async function down() {
+  // unapplySchema(schema);
+}
+
 const schema = initSchema();
 
 schema.collections = [
@@ -61,5 +72,3 @@ schema.fields = [
     },
   },
 ];
-
-export default schema;

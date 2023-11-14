@@ -35,12 +35,12 @@ export default async function createExampleData() {
 
   const directus = await useDirectus();
 
-  const memberRole = await getRole("collectivo_member");
+  const userRole = await getRole("collectivo_user");
   const editorRole = await getRole("collectivo_editor");
   const adminRole = await getRole("collectivo_admin");
 
   // Create some users
-
+  console.log("Creating users");
   const userNames = [
     "Admin",
     "Editor",
@@ -57,7 +57,7 @@ export default async function createExampleData() {
       first_name: userName,
       last_name: "Example",
       email: email,
-      role: memberRole,
+      role: userRole,
       provider: "keycloak",
       status: "active",
       external_identifier: email,
@@ -100,6 +100,7 @@ export default async function createExampleData() {
   }
 
   // Create some tags
+  console.log("Creating tags");
   await directus.request(deleteItems("collectivo_tags", { limit: 1000 }));
   const tagNames = ["Has a dog", "Has a cat", "Has a bird", "Has a fish"];
   const tags: any[] = [];
@@ -110,6 +111,7 @@ export default async function createExampleData() {
   }
 
   // Add some members to some tags
+  console.log("Creating tag-member relations");
   for (var i = 0; i < 3; i++) {
     tags[i].collectivo_members = {
       create: [
@@ -127,6 +129,7 @@ export default async function createExampleData() {
   }
 
   // Create some tiles
+  console.log("Creating tiles");
   await directus.request(deleteItems("collectivo_tiles", { limit: 1000 }));
   const tileNames = ["Tile 1", "Tile 2", "Tile 3", "Tile 4"];
   const tiles = [];

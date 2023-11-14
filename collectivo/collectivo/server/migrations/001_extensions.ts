@@ -1,16 +1,8 @@
-import {
-  createFolder,
-  deleteCollection,
-  DirectusCollection,
-  DirectusField,
-  NestedPartial,
-} from "@directus/sdk";
-
 const migration = createMigration("collectivo", "0.0.1", up, down);
 export default migration;
 
 async function up() {
-  applySchema(schema);
+  await applySchema(schema);
 }
 
 async function down() {
@@ -18,6 +10,24 @@ async function down() {
 }
 
 const schema = initSchema();
+
+schema.roles = [
+  {
+    name: "collectivo_user",
+    app_access: false,
+    admin_access: false,
+  },
+  {
+    name: "collectivo_editor",
+    app_access: true,
+    admin_access: false,
+  },
+  {
+    name: "collectivo_admin",
+    app_access: true,
+    admin_access: true,
+  },
+];
 
 schema.collections = [
   {

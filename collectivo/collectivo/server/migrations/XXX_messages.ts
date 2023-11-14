@@ -1,11 +1,13 @@
-import {
-  createFolder,
-  deleteCollection,
-  DirectusCollection,
-  DirectusField,
-  NestedPartial,
-} from "@directus/sdk";
-import { directusO2MRelation } from "../utils/directusRelations";
+const migration = createMigration("collectivo", "0.0.5", up, down);
+export default migration;
+
+async function up() {
+  await applySchema(schema);
+}
+
+async function down() {
+  // unapplySchema(schema);
+}
 
 const schema = initSchema();
 
@@ -198,5 +200,3 @@ const operation = {
     to: ["{{ recipient.email }}"],
   },
 };
-
-export default schema;

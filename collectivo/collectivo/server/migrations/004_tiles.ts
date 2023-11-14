@@ -1,8 +1,13 @@
-import {
-  directusSortField,
-  directusStatusField,
-  directusSystemFields,
-} from "../utils/directusFields";
+const migration = createMigration("collectivo", "0.0.4", up, down);
+export default migration;
+
+async function up() {
+  await applySchema(schema);
+}
+
+async function down() {
+  // unapplySchema(schema);
+}
 
 const schema = initSchema();
 const collection = "collectivo_tiles";
@@ -82,5 +87,3 @@ schema.permissions = [
     validation: {},
   },
 ];
-
-export default schema;

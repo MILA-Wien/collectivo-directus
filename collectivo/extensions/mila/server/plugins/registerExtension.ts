@@ -7,6 +7,6 @@ export default defineNitroPlugin((nitroApp) => {
     name: "mila",
     description: pkg.description,
     version: pkg.version,
-    migrations: [m1],
+    // migrations: [m1],
   });
 });

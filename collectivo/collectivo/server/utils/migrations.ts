@@ -107,7 +107,7 @@ async function getExtensionsFromDb() {
   try {
     extensions = await directus.request(readItems("collectivo_extensions"));
     if (extensions.length === 0) {
-      return undefined;
+      throw new Error("Extensions collection is empty");
     }
     return extensions;
   } catch (e) {
@@ -176,7 +176,13 @@ async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
   // Run selected migrations
   if (!ext.migrations) return;
   var migrationState: string = extensionDb ? extensionDb.migration : "0.0.0";
-  const migrationTarget = to != undefined ? to : ext.migrations[-1].version;
+
+  // Target is either "to" or that latest migration
+  const migrationTarget = to != undefined ? to : ext.migrations.at(-1)?.version;
+  if (!migrationTarget) {
+    throw new Error(`Error reading target migration version for ${ext.name}`);
+  }
+
   var migrationStateIndex = ext.migrations.findIndex(
     (f) => f.version === migrationState
   );
@@ -190,18 +196,27 @@ async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
     `Migrating ${ext.name} from ${migrationState} to ${migrationTarget}`
   );
 
-  if (compareVersions(migrationTarget, migrationState)) {
+  console.log("Migration state index: " + migrationStateIndex);
+  console.log("Migration target index: " + migrationTargetIndex);
+
+  if (migrationStateIndex < migrationTargetIndex) {
+    console.log("running up");
     for (const migration of ext.migrations.slice(
-      migrationStateIndex,
-      migrationTargetIndex
+      migrationStateIndex + 1,
+      migrationTargetIndex + 1
     )) {
       try {
         // checkDependencies(migration, extsDb);
         await migration.up();
         migrationStateIndex++;
+        console.log("Migration state index: " + migrationStateIndex);
+        console.log(
+          "Migration state ",
+          ext.migrations[migrationStateIndex].version
+        );
         await directus.request(
           updateItem("collectivo_extensions", extensionDb.id, {
-            migration: migrationState,
+            migration: ext.migrations[migrationStateIndex].version,
           })
         );
       } catch (e) {
@@ -211,7 +226,7 @@ async function runMigrations(ext: ExtensionConfig, extsDb: any[], to?: string) {
         throw e;
       }
     }
-  } else if (compareVersions(migrationState, migrationTarget)) {
+  } else if (migrationStateIndex > migrationTargetIndex) {
     for (const migration of ext.migrations
       .slice(migrationTargetIndex, migrationStateIndex)
       .reverse()) {

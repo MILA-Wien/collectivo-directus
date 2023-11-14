@@ -1,4 +1,13 @@
-import { createDirectusM2MRelation } from "../utils/schemas";
+const migration = createMigration("collectivo", "0.0.2", up, down);
+export default migration;
+
+async function up() {
+  await applySchema(schema);
+}
+
+async function down() {
+  // unapplySchema(schema);
+}
 
 const schema = initSchema();
 const collection = "collectivo_tags";
@@ -66,5 +75,3 @@ directusM2MRelation(schema, "collectivo_tags", "directus_users", {
     },
   },
 });
-
-export default schema;
